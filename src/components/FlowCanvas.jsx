@@ -121,7 +121,9 @@ export default function FlowCanvas({
            <div className="bg-[#1c1c1e] border border-white/10 rounded-[32px] w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
               <div className="p-8 border-b border-white/5 flex items-center justify-between">
                  <div className="flex items-center gap-4">
-                    <span className="text-3xl">{selectedNode.icon}</span>
+                     <div className="w-12 h-12 rounded-xl bg-white/5 p-2 flex items-center justify-center border border-white/10">
+                        <img src={selectedNode.icon} className="w-full h-full object-contain" alt="" />
+                     </div>
                     <div>
                        <h2 className="text-xl font-black">{selectedNode.modelName}</h2>
                        <p className="text-[10px] font-black uppercase tracking-widest text-white/20">{selectedNode.tier}</p>
@@ -207,7 +209,9 @@ function AutomationNode({ x, y, status, icon, title, subtitle, children, color, 
     >
       <div className={`rounded-2xl bg-[#0f1115] border ${isActive ? 'border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.2)]' : isDone ? 'border-white/10 hover:border-white/30' : 'border-white/5'} transition-all`}>
         <div className="flex items-center gap-2 p-3 bg-white/[0.02] border-b border-white/[0.05]">
-          <span className="text-sm">{icon}</span>
+          <div className="w-6 h-6 rounded bg-white/5 p-1 flex items-center justify-center border border-white/5">
+             <img src={icon} className="w-full h-full object-contain" alt="" />
+          </div>
           <div className="min-w-0">
             <h3 className="text-[10px] font-black text-white/90 uppercase tracking-widest truncate">{title}</h3>
             <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest">{subtitle}</p>

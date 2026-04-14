@@ -136,14 +136,13 @@ export default function ModelSelectionModal({
                   >
                     <div className="flex items-start gap-3">
                       {/* Icon */}
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{
-                          background: `${model.color}15`,
-                          border: `1px solid ${model.color}25`,
-                        }}
-                      >
-                        <span className="text-lg">{model.icon}</span>
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${model.bg || 'bg-white/5'} p-2`}
+                          style={{
+                            border: `1px solid ${model.color}25`,
+                          }}
+                        >
+                          <img src={model.icon} className="w-full h-full object-contain" alt="" />
                       </div>
 
                       {/* Info */}

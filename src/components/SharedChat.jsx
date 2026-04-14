@@ -99,7 +99,7 @@ export default function SharedChat() {
                         {msg.responseL4 && (
                           <div className="bg-[#0d0d12] border border-white/5 rounded-[48px] p-12 lg:p-20 shadow-2xl relative overflow-hidden group">
                              <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <span className="text-9xl">⚖️</span>
+                                <img src="/logo.png" className="w-32 h-32 object-contain" alt="" />
                              </div>
                              <div className="relative z-10">
                                 <div className="flex items-center gap-3 mb-10">
@@ -118,7 +118,9 @@ export default function SharedChat() {
             </div>
             
             <div className="pt-40 pb-20 text-center">
-               <div className="w-20 h-20 rounded-full border border-white/5 flex items-center justify-center mx-auto mb-10 text-3xl grayscale opacity-20">🏛️</div>
+               <div className="w-20 h-20 rounded-2xl border border-white/5 flex items-center justify-center mx-auto mb-10 p-4 opacity-20 bg-white/5">
+                  <img src="/logo.png" className="w-full h-full object-contain grayscale" alt="" />
+               </div>
                <p className="text-[12px] font-black text-white/10 uppercase tracking-[0.8em]">End of Verified Logic Chain</p>
             </div>
          </div>

@@ -160,7 +160,9 @@ export default function ParliamentFloor({
       {selectedModels.length === 0 && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center animate-fade-up">
-            <div className="text-5xl mb-4 opacity-30">🏛️</div>
+            <div className="w-16 h-16 mx-auto mb-6 opacity-30">
+               <img src="/logo.png" className="w-full h-full object-contain grayscale" alt="" />
+            </div>
             <p className="text-council-text-secondary text-sm">
               Select models above to convene the Parliament
             </p>
@@ -348,21 +350,20 @@ function SpeakerNode({ x, y, response, isThinking }) {
       {/* Speaker icon */}
       <div
         className={`
-          relative rounded-full flex items-center justify-center
-          transition-all duration-700
+          relative rounded-2xl flex items-center justify-center p-2
+          transition-all duration-700 bg-white/5
           ${isThinking ? 'animate-breathe' : ''}
         `}
         style={{
           width: 68,
           height: 68,
-          background: 'radial-gradient(circle at 30% 30%, rgba(139,92,246,0.2), rgba(59,130,246,0.1))',
           border: '1.5px solid rgba(139,92,246,0.4)',
           boxShadow: isThinking
             ? '0 0 40px rgba(139,92,246,0.3), 0 0 80px rgba(139,92,246,0.1)'
             : '0 0 20px rgba(139,92,246,0.15)',
         }}
       >
-        <span className="text-2xl select-none">⚖️</span>
+        <img src="/logo.png" className="w-full h-full object-contain" alt="" />
       </div>
 
       <p className="text-[11px] font-semibold mt-2 gradient-text tracking-wide">

@@ -36,9 +36,9 @@ export default function ChatInput({ onSend, isDisabled, selectedModelsCount }) {
             boxShadow: '0 -4px 30px rgba(0,0,0,0.3), 0 0 20px rgba(139,92,246,0.05)',
           }}
         >
-          {/* Parliament icon */}
-          <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-violet-500/10 border border-violet-500/20">
-            <span className="text-sm">🏛️</span>
+          {/* Council icon */}
+          <div className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border border-white/5 bg-white/5">
+            <img src="/logo.png" className="w-5 h-5 object-contain opacity-70" alt="" />
           </div>
 
           {/* Input */}

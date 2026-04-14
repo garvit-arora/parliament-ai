@@ -7,7 +7,7 @@ export default function Onboarding({ onComplete, user }) {
     {
       title: "The Adversarial Mandate",
       desc: "Parliament isn't a chatbot. It's a structured deliberation engine. We pit multiple models against each other to find the absolute truth.",
-      icon: "🏛️"
+      icon: "/logo.png"
     },
     {
       title: "Hierarchical Verification",
@@ -24,7 +24,11 @@ export default function Onboarding({ onComplete, user }) {
   return (
     <div className="h-screen w-full bg-[#09090b] flex flex-col items-center justify-center p-10 font-sans">
       <div className="max-w-xl w-full text-center">
-        <div className="text-[120px] mb-12 animate-bounce-slow">{steps[step-1].icon}</div>
+        {steps[step-1].icon.startsWith('/') ? (
+           <img src={steps[step-1].icon} className="w-32 h-32 object-contain mx-auto mb-12 animate-pulse-slow" alt="" />
+        ) : (
+           <div className="text-[120px] mb-12 animate-bounce-slow">{steps[step-1].icon}</div>
+        )}
         <div className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ea3a5b] mb-4">Protocol Phase 0{step}</div>
         <h1 className="text-4xl font-black text-white mb-6 tracking-tighter transition-all">{steps[step-1].title}</h1>
         <p className="text-white/40 text-lg leading-relaxed mb-16 font-medium">{steps[step-1].desc}</p>

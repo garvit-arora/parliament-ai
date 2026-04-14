@@ -32,8 +32,8 @@ export default function ResponsePanel({ messages, onViewFlow }) {
           {/* AI SPEAKER MESSAGE BUBBLE */}
           <div className="flex w-full gap-5 bg-[#171821] p-6 rounded-[20px] border border-[#ea3a5b]/20 shadow-[0_8px_30px_rgba(234,58,91,0.05)] relative overflow-hidden">
              <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#ea3a5b] to-purple-500" />
-             <div className="w-10 h-10 rounded-xl bg-[#ea3a5b]/10 flex items-center justify-center flex-shrink-0 shadow-[0_0_25px_rgba(234,58,91,0.2)] border border-[#ea3a5b]/30 text-lg">
-                🏛️
+             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-[0_0_25px_rgba(234,58,91,0.2)] border border-[#ea3a5b]/30">
+                <img src="/logo.png" className="w-6 h-6 object-contain filter drop-shadow-[0_2px_5px_rgba(234,58,91,0.5)]" alt="Council" />
              </div>
              
              <div className="flex-1 w-full pt-1">
