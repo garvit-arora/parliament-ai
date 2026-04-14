@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --glow-blue: rgba(59, 130, 246, 0.4);
+  --glow-violet: rgba(139, 92, 246, 0.4);
+  --glow-cyan: rgba(6, 182, 212, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #09090b;
+  color: #f0f0f5;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Glow effects */
+.glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.1);
+}
+.glow-violet {
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.2), 0 0 40px rgba(139, 92, 246, 0.1);
+}
+.glow-cyan {
+  box-shadow: 0 0 20px rgba(6, 182, 212, 0.2), 0 0 40px rgba(6, 182, 212, 0.1);
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #8b5cf6, #3b82f6, #06b6d4);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Animated gradient border */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.animated-border {
+  position: relative;
+  border: none !important;
+}
+
+.animated-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(var(--angle), #8b5cf6, #3b82f6, #06b6d4, #8b5cf6);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: rotate-border 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes rotate-border {
+  to { --angle: 360deg; }
+}
+
+/* Energy wave */
+.energy-wave {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  animation: energy-wave-expand 2s ease-out infinite;
+}
+
+@keyframes energy-wave-expand {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Neural line animation */
+.neural-line {
+  stroke-dasharray: 8 4;
+  animation: neural-flow 1.5s linear infinite;
+}
+
+@keyframes neural-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+
+/* Floating particles */
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Focus beam */
+.focus-beam {
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, rgba(139, 92, 246, 0) 100%);
+  animation: beam-pulse 2s ease-in-out infinite;
+}
+
+@keyframes beam-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+/* Selection glow animation */
+@keyframes selected-border-glow {
+  0%, 100% {
+    border-color: rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2), inset 0 0 15px rgba(139, 92, 246, 0.05);
+  }
+  50% {
+    border-color: rgba(139, 92, 246, 0.8);
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.3), inset 0 0 25px rgba(139, 92, 246, 0.1);
+  }
+}
+
+.selected-glow {
+  animation: selected-border-glow 2s ease-in-out infinite;
+}
+
+/* Flow canvas: animated dashed line */
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+/* Line clamp utility */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Markdown Support */
+.prose-invert h1 { @apply text-2xl font-bold mb-4 mt-6; }
+.prose-invert h2 { @apply text-xl font-bold mb-3 mt-5; }
+.prose-invert h3 { @apply text-lg font-bold mb-2 mt-4; }
+.prose-invert p { @apply mb-4 leading-relaxed; }
+.prose-invert strong { @apply text-white font-bold; }
+.prose-invert ul { @apply list-disc ml-6 mb-4 space-y-2; }
+.prose-invert ol { @apply list-decimal ml-6 mb-4 space-y-2; }
+.prose-invert li { @apply text-white/80; }
+.prose-invert code { @apply bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono text-[#ea3a5b]; }
+.prose-invert blockquote { @apply border-l-4 border-white/10 pl-4 italic text-white/60 mb-4; }
+.prose-invert hr { @apply border-white/5 my-8; }
