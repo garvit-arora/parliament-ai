@@ -29,8 +29,8 @@ export default function ParliamentFloor({
   const nodePositions = useMemo(() => {
     const cx = containerSize.w / 2;
     const cy = containerSize.h * 0.65;
-    const radiusX = Math.min(containerSize.w * 0.38, 350);
-    const radiusY = Math.min(containerSize.h * 0.38, 220);
+    const radiusX = Math.min(containerSize.w * (containerSize.w < 640 ? 0.45 : 0.38), 350);
+    const radiusY = Math.min(containerSize.h * (containerSize.w < 640 ? 0.45 : 0.38), 220);
     const count = selectedModels.length;
 
     if (count === 0) return [];

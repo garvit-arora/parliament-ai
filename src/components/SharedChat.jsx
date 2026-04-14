@@ -93,7 +93,12 @@ export default function SharedChat() {
                            responseL4={msg.responseL4} 
                            isThinking={false} 
                            phase="done" 
-                           config={{}} // Shared view uses stored responses
+                           config={{
+                              layer1: msg.responsesL1?.map(r => r.model_id) || [],
+                              layer2: msg.responseL2?.model_id,
+                              layer3: msg.responseL3?.model_id,
+                              layer4: msg.responseL4?.model_id
+                           }}
                         />
                         
                         {msg.responseL4 && (

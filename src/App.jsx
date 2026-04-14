@@ -8,6 +8,7 @@ import LandingPage from './components/LandingPage';
 import FlowConfigModal from './components/FlowConfigModal';
 import PremiumModal from './components/PremiumModal';
 import SharedChat from './components/SharedChat';
+import NotFound from './components/NotFound';
 import AccountPage from './components/AccountPage';
 import Onboarding from './components/Onboarding';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
@@ -169,11 +170,15 @@ function MainApp() {
            updateMessage({ responseL4: event.state.l4_response, isProcessing: false });
            setPhase('done');
            
-           setHistory(h => {
-             const current = h.find(s => s.id === currentSessionId);
-             if (current) saveChat(currentUser.uid, currentSessionId, current.title, current.messages);
-             return h;
-           });
+           // Trigger save after state updates
+           setTimeout(async () => {
+             const updatedHistory = JSON.parse(localStorage.getItem('parliament_history') || '[]');
+             const current = updatedHistory.find(s => s.id === currentSessionId);
+             if (current) {
+                try { await saveChat(currentUser.uid, currentSessionId, current.title, current.messages); }
+                catch (e) { console.error("Database sync failed", e); }
+             }
+           }, 500);
         }
       }, controller.signal);
     } catch (error) {
@@ -317,10 +322,23 @@ function MainApp() {
         <Route path="/share/:sessionId" element={<SharedChat />} />
         <Route path="/onboarding" element={<Onboarding onComplete={() => navigate('/dashboard')} user={currentUser} />} />
         <Route path="/account" element={currentUser ? <AccountPage user={currentUser} onLogout={handleLogout} onUpdate={(u) => {setCurrentUser(u); localStorage.setItem('parliament_user', JSON.stringify(u));}} /> : <Navigate to="/login" />} />
+        <Route path="*" element={<NotFound />} />
         <Route path="/dashboard" element={
           !currentUser ? <Navigate to="/login" /> : (
-            <div className="h-screen w-full flex bg-[#09090b] text-white">
-               <div className={`transition-all duration-300 border-r border-white/5 bg-[#0d0d12] flex flex-col flex-shrink-0 ${sidebarOpen ? 'w-[280px]' : 'w-0 overflow-hidden'}`}>
+            <div className="h-screen w-full flex bg-[#09090b] text-white overflow-hidden relative">
+               {/* Mobile Sidebar Overlay */}
+               {sidebarOpen && (
+                 <div 
+                   className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] lg:hidden" 
+                   onClick={() => setSidebarOpen(false)}
+                 />
+               )}
+
+               <div className={`
+                 transition-all duration-300 border-r border-white/5 bg-[#0d0d12] flex flex-col flex-shrink-0 z-[120]
+                 ${sidebarOpen ? 'w-[280px] opacity-100' : 'w-0 opacity-0 overflow-hidden'}
+                 ${sidebarOpen ? 'fixed inset-y-0 left-0 lg:relative' : ''}
+               `}>
                   <div className="w-[280px] h-full flex flex-col p-4">
                      <div className="flex items-center justify-between mb-6 px-2">
                         <div className="flex items-center gap-2">
@@ -341,14 +359,21 @@ function MainApp() {
                   </div>
                </div>
                
-               <div className="flex-1 flex flex-col bg-[#09090b] min-w-0">
-         <header className="flex items-center justify-between px-8 py-4 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.02] z-[100] sticky top-0">
-            <div className="flex items-center gap-6">
+                <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
+          <header className="flex items-center justify-between px-4 md:px-8 py-4 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.02] z-[100] sticky top-0">
+             <div className="flex items-center gap-3 md:gap-6">
+                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg lg:hidden">
+                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <line x1="3" y1="12" x2="21" y2="12"></line>
+                      <line x1="3" y1="6" x2="21" y2="6"></line>
+                      <line x1="3" y1="18" x2="21" y2="18"></line>
+                   </svg>
+                </button>
                {activeSession && (
                  <>
-                   <div className="flex items-center bg-white/5 rounded-full p-1 border border-white/5">
-                      <button onClick={() => setCurrentView('flow')} className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Logic Flow</button>
-                      <button onClick={() => setCurrentView('transcript')} className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Transcript</button>
+                   <div className="flex items-center bg-white/5 rounded-full p-1 border border-white/5 overflow-hidden">
+                      <button onClick={() => setCurrentView('flow')} className={`px-3 md:px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Logic</button>
+                      <button onClick={() => setCurrentView('transcript')} className={`px-3 md:px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Transcript</button>
                    </div>
                    <div className="h-4 w-[1px] bg-white/10" />
                    <div className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 truncate max-w-[300px]">{activeSession.title}</div>

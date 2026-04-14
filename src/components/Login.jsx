@@ -31,17 +31,17 @@ export default function Login({ onLogin }) {
       
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-[#09090b]/60 backdrop-blur-xl border-b border-white/5">
-        <div className="w-full px-12 h-24 flex items-center justify-between">
+        <div className="w-full px-6 md:px-12 h-24 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => window.location.href = '/'}>
-            <img src="/logo.png" alt="Council X" className="w-12 h-12 object-contain" />
-            <span className="font-black text-2xl tracking-tighter uppercase whitespace-nowrap">
+            <img src="/logo.png" alt="Council X" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
+            <span className="font-black text-xl md:text-2xl tracking-tighter uppercase whitespace-nowrap">
                <span className="text-white">Council</span>
                <span className="text-[#ea3a5b] ml-1">X</span>
             </span>
           </div>
           
           <div className="flex items-center gap-10">
-            <button onClick={() => window.location.href = '/'} className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all">Back to Home</button>
+            <button onClick={() => window.location.href = '/'} className="text-[10px] md:text-[11px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all whitespace-nowrap">Home</button>
           </div>
         </div>
       </nav>
