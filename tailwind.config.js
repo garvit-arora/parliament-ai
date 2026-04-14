@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        parliament: {
+        council: {
           bg: '#09090b',
           surface: '#0f0f13',
           card: '#14141a',

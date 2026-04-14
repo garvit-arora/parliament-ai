@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getSharedChat } from '../api/parliament';
+import { getSharedChat } from '../api/council';
 import FlowCanvas from './FlowCanvas';
 import ReactMarkdown from 'react-markdown';
 import toast from 'react-hot-toast';
@@ -51,9 +51,9 @@ export default function SharedChat() {
       <header className="fixed top-0 w-full z-50 bg-[#09090b]/40 backdrop-blur-xl border-b border-white/[0.03]">
         <div className="max-w-7xl mx-auto px-10 h-24 flex items-center justify-between">
           <div className="flex items-center gap-5">
-             <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-black text-xl shadow-xl shadow-blue-500/10">P</div>
+             <img src="/logo.png" alt="Council X" className="w-12 h-12 object-contain filter drop-shadow-[0_5px_15px_rgba(59,130,246,0.3)]" />
              <div>
-                <h1 className="text-xl font-black tracking-tighter leading-none">AI Parliament</h1>
+                <h1 className="text-xl font-black tracking-tighter leading-none uppercase"><span className="text-white">Council</span> <span className="text-[#ea3a5b]">X</span></h1>
                 <p className="text-[10px] text-white/20 font-black uppercase tracking-[0.2em] mt-1">Immutable Consensus Archive</p>
              </div>
           </div>

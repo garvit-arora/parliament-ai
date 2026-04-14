@@ -68,7 +68,7 @@ export default function ModelSelectionModal({
           <div className="px-6 pb-3">
             <div className="relative">
               <svg
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-parliament-text-muted"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-council-text-muted"
                 width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
               >
                 <circle cx="11" cy="11" r="8" />
@@ -79,7 +79,7 @@ export default function ModelSelectionModal({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Explore models"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white placeholder:text-parliament-text-muted/60 outline-none focus:border-violet-500/30 transition-colors"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-white placeholder:text-council-text-muted/60 outline-none focus:border-violet-500/30 transition-colors"
               />
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function ModelSelectionModal({
                   flex-shrink-0 text-xs px-3 py-1.5 rounded-full transition-all duration-200
                   ${activeCategory === cat.id
                     ? 'bg-white/10 text-white border border-white/15'
-                    : 'text-parliament-text-muted hover:text-parliament-text-secondary hover:bg-white/[0.03] border border-transparent'
+                    : 'text-council-text-muted hover:text-council-text-secondary hover:bg-white/[0.03] border border-transparent'
                   }
                 `}
               >
@@ -105,7 +105,7 @@ export default function ModelSelectionModal({
 
           {/* Selected summary */}
           <div className="px-6 pb-2">
-            <p className="text-[10px] uppercase tracking-[0.15em] text-parliament-text-muted font-medium">
+            <p className="text-[10px] uppercase tracking-[0.15em] text-council-text-muted font-medium">
               {selectedModels.length} deliberator{selectedModels.length !== 1 ? 's' : ''} selected
               {speakerModel && ` · Speaker: ${MODELS.find(m => m.id === speakerModel)?.name || speakerModel}`}
             </p>
@@ -156,10 +156,10 @@ export default function ModelSelectionModal({
                             </span>
                           )}
                         </div>
-                        <p className="text-[11px] text-parliament-text-muted mt-0.5">
+                        <p className="text-[11px] text-council-text-muted mt-0.5">
                           by {model.provider}
                         </p>
-                        <p className="text-[10px] text-parliament-text-muted/70 mt-1">
+                        <p className="text-[10px] text-council-text-muted/70 mt-1">
                           {model.description}
                         </p>
                       </div>
@@ -190,7 +190,7 @@ export default function ModelSelectionModal({
                           className={`text-[9px] px-2.5 py-1 rounded-full font-medium transition-all ${
                             !isSpeaker
                               ? 'bg-blue-500/15 text-blue-400 border border-blue-500/30'
-                              : 'text-parliament-text-muted border border-white/[0.06] hover:border-white/10'
+                              : 'text-council-text-muted border border-white/[0.06] hover:border-white/10'
                           }`}
                         >
                           Deliberator
@@ -203,7 +203,7 @@ export default function ModelSelectionModal({
                           className={`text-[9px] px-2.5 py-1 rounded-full font-medium transition-all ${
                             isSpeaker
                               ? 'bg-violet-500/15 text-violet-400 border border-violet-500/30'
-                              : 'text-parliament-text-muted border border-white/[0.06] hover:border-white/10'
+                              : 'text-council-text-muted border border-white/[0.06] hover:border-white/10'
                           }`}
                         >
                           ⚖️ Speaker
@@ -218,7 +218,7 @@ export default function ModelSelectionModal({
 
           {/* Footer action */}
           <div className="px-6 py-4 border-t border-white/[0.06] flex items-center justify-between">
-            <p className="text-[10px] text-parliament-text-muted">
+            <p className="text-[10px] text-council-text-muted">
               Deliberators think in parallel · Speaker synthesizes
             </p>
             <button

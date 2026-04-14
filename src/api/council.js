@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export async function queryLayer1(prompt, models) {
   const response = await fetch(`${API_BASE_URL}/ask/layer1`, {
@@ -96,11 +96,19 @@ export async function authProfile(uid, email, displayName) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ uid, email, display_name: displayName })
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Auth failed (${response.status}): ${text.slice(0, 100)}`);
+  }
   return response.json();
 }
 
 export async function getChats(uid) {
   const response = await fetch(`${API_BASE_URL}/api/chats/${uid}`);
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Failed to fetch chats (${response.status}): ${text.slice(0, 100)}`);
+  }
   return response.json();
 }
 
@@ -141,5 +149,9 @@ export async function generateChatTitle(prompt, modelId) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt, model: modelId })
   });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Failed to generate title (${response.status}): ${text.slice(0, 100)}`);
+  }
   return response.json();
 }

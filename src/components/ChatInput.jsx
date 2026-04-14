@@ -57,7 +57,7 @@ export default function ChatInput({ onSend, isDisabled, selectedModelsCount }) {
                 ? 'Parliament is deliberating...'
                 : 'Present your query to the Parliament...'
             }
-            className="flex-1 bg-transparent text-sm text-parliament-text-primary placeholder:text-parliament-text-muted/50 outline-none disabled:opacity-40"
+            className="flex-1 bg-transparent text-sm text-council-text-primary placeholder:text-council-text-muted/50 outline-none disabled:opacity-40"
           />
 
           {/* Send button */}
@@ -92,7 +92,7 @@ export default function ChatInput({ onSend, isDisabled, selectedModelsCount }) {
         </div>
 
         {/* Subtle hint */}
-        <p className="text-center text-[10px] text-parliament-text-muted/40 mt-2">
+        <p className="text-center text-[10px] text-council-text-muted/40 mt-2">
           Press Enter to submit • Multiple AI models will deliberate
         </p>
       </form>

@@ -9,11 +9,11 @@ export default function ModelSelector({ selectedModels, onToggleModel }) {
     <div id="model-selector" className="w-full px-6 py-4">
       <div className="flex items-center gap-3 mb-3">
         <div className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse-slow" />
-        <h2 className="text-xs font-medium tracking-[0.2em] uppercase text-parliament-text-secondary">
+        <h2 className="text-xs font-medium tracking-[0.2em] uppercase text-council-text-secondary">
           Parliament Members
         </h2>
         <div className="flex-1 h-px bg-gradient-to-r from-violet-500/20 to-transparent" />
-        <span className="text-[10px] text-parliament-text-muted font-mono">
+        <span className="text-[10px] text-council-text-muted font-mono">
           {selectedModels.length} selected
         </span>
       </div>
@@ -51,12 +51,14 @@ export default function ModelSelector({ selectedModels, onToggleModel }) {
               <div className="relative z-10">
                 {/* Icon and name */}
                 <div className="flex items-center gap-2.5 mb-2">
-                  <span className="text-xl">{model.icon}</span>
+                  <div className={`w-8 h-8 rounded-lg ${model.bg || 'bg-white/5'} flex items-center justify-center p-1.5`}>
+                    <img src={model.icon} className="w-full h-full object-contain" alt="" />
+                  </div>
                   <div>
-                    <p className="text-sm font-semibold text-parliament-text-primary leading-tight">
+                    <p className="text-sm font-semibold text-council-text-primary leading-tight">
                       {model.name}
                     </p>
-                    <p className="text-[10px] text-parliament-text-muted mt-0.5">
+                    <p className="text-[10px] text-council-text-muted mt-0.5">
                       {model.description}
                     </p>
                   </div>

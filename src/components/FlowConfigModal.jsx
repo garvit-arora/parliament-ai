@@ -88,14 +88,19 @@ export default function FlowConfigModal({ isOpen, onClose, config, onSave }) {
                        
                        {tab.id === 'layer1' && tab.state && (
                          <div className="mt-3 flex -space-x-2">
-                            {localConfig.layer1.map(id => (
-                               <div key={id} className={`w-6 h-6 rounded-lg flex items-center justify-center text-[10px] border ${activeTab === tab.id ? 'bg-white/10 border-white/20' : 'bg-[#1a1a23] border-white/5 shadow-lg'}`}>{getModelById(id)?.icon}</div>
-                            ))}
+                             {localConfig.layer1.map(id => {
+                                const m = getModelById(id);
+                                return (
+                                   <div key={id} className={`w-6 h-6 rounded-lg flex items-center justify-center p-1 border ${activeTab === tab.id ? 'bg-white/10 border-white/20' : `${m?.bg || 'bg-[#1a1a23]'} border-white/5 shadow-lg`}`}>
+                                      <img src={m?.icon} className="w-full h-full object-contain" alt="" />
+                                   </div>
+                                );
+                             })}
                          </div>
                        )}
                        {tab.id !== 'layer1' && tab.state && (
                          <div className={`mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-blue-500/10 text-blue-400'}`}>
-                            {tab.model?.icon} {tab.model?.name}
+                            <img src={tab.model?.icon} className="w-3 h-3 object-contain" alt="" /> {tab.model?.name}
                          </div>
                        )}
                     </button>
@@ -145,8 +150,8 @@ export default function FlowConfigModal({ isOpen, onClose, config, onSave }) {
                          className={`group p-8 rounded-[40px] border text-left transition-all relative flex flex-col ${isSelected(model.id) ? 'bg-blue-600/10 border-blue-500/40 shadow-[0_20px_60px_rgba(37,99,235,0.05)]' : 'bg-[#121217] border-white/5 hover:border-white/10 hover:bg-[#1a1a23]'}`}
                        >
                           <div className="flex items-start justify-between mb-10">
-                             <div className={`w-16 h-16 rounded-3xl flex items-center justify-center text-4xl shadow-xl transition-all duration-500 ${isSelected(model.id) ? 'bg-blue-600 text-white scale-110' : 'bg-[#1a1a23] border border-white/5 grayscale group-hover:grayscale-0 group-hover:scale-105'}`}>
-                                {model.icon}
+                             <div className={`w-16 h-16 rounded-3xl flex items-center justify-center p-3 shadow-xl transition-all duration-500 ${isSelected(model.id) ? 'bg-white scale-110' : `${model.bg || 'bg-[#1a1a23]'} border border-white/5 grayscale group-hover:grayscale-0 group-hover:scale-105`}`}>
+                                <img src={model.icon} className="w-full h-full object-contain" alt="" />
                              </div>
                              {isSelected(model.id) && (
                                 <div className="w-8 h-8 rounded-2xl bg-blue-500 flex items-center justify-center text-white scale-in duration-300 shadow-lg">

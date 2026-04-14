@@ -11,7 +11,7 @@ import SharedChat from './components/SharedChat';
 import AccountPage from './components/AccountPage';
 import Onboarding from './components/Onboarding';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
-import { queryStreamGraph, getChats, saveChat, deleteChat, generateChatTitle } from './api/parliament';
+import { queryStreamGraph, getChats, saveChat, deleteChat, generateChatTitle } from './api/council';
 import ReactMarkdown from 'react-markdown';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -323,7 +323,10 @@ function MainApp() {
                <div className={`transition-all duration-300 border-r border-white/5 bg-[#0d0d12] flex flex-col flex-shrink-0 ${sidebarOpen ? 'w-[280px]' : 'w-0 overflow-hidden'}`}>
                   <div className="w-[280px] h-full flex flex-col p-4">
                      <div className="flex items-center justify-between mb-6 px-2">
-                        <span className="font-bold text-sm uppercase tracking-widest opacity-50">Chat Hub</span>
+                        <div className="flex items-center gap-2">
+                           <img src="/logo.png" alt="" className="w-6 h-6 object-contain" />
+                           <span className="font-black text-sm uppercase tracking-widest opacity-50 text-white">Council <span className="text-[#ea3a5b]">X</span></span>
+                        </div>
                         <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-white/5 rounded-lg"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
                      </div>
                      <button onClick={handleNewChat} className="w-full h-11 bg-[#1a1b26] border border-white/5 rounded-full text-sm font-bold mb-8">New Chat</button>
@@ -444,7 +447,7 @@ function MainApp() {
                                                      const newMessages = [...activeSession.messages];
                                                      newMessages[idx].feedback = 'like';
                                                      setActiveSession({...activeSession, messages: newMessages});
-                                                     import('./api/parliament').then(m => m.saveFeedback(currentUser.uid, activeSessionId, idx, 'like'));
+                                                     import('./api/council').then(m => m.saveFeedback(currentUser.uid, activeSessionId, idx, 'like'));
                                                    }} 
                                                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                                                  >
@@ -455,7 +458,7 @@ function MainApp() {
                                                      const newMessages = [...activeSession.messages];
                                                      newMessages[idx].feedback = 'dislike';
                                                      setActiveSession({...activeSession, messages: newMessages});
-                                                     import('./api/parliament').then(m => m.saveFeedback(currentUser.uid, activeSessionId, idx, 'dislike'));
+                                                     import('./api/council').then(m => m.saveFeedback(currentUser.uid, activeSessionId, idx, 'dislike'));
                                                    }}
                                                    className="p-2 hover:bg-white/10 rounded-lg transition-colors"
                                                  >

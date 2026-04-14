@@ -10,23 +10,29 @@ export default function LandingPage({ onLoginClick }) {
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#09090b]/40 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ea3a5b] to-[#ff4e6e] flex items-center justify-center font-black text-xl shadow-[0_5px_20px_rgba(234,58,91,0.3)]">P</div>
-            <span className="font-bold text-xl tracking-tighter uppercase whitespace-nowrap">AI Parliament</span>
+      <nav className="fixed top-0 w-full z-50 bg-[#09090b]/60 backdrop-blur-xl border-b border-white/5">
+        <div className="w-full px-12 h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src="/logo.png" alt="Council X" className="w-12 h-12 object-contain filter drop-shadow-[0_5px_15px_rgba(234,58,91,0.4)]" />
+            <span className="font-black text-2xl tracking-tighter uppercase whitespace-nowrap">
+               <span className="text-white">Council</span>
+               <span className="text-[#ea3a5b] ml-1">X</span>
+            </span>
           </div>
           
-          <div className="hidden lg:flex items-center gap-10 text-[11px] font-bold uppercase tracking-[0.2em] text-white/40">
-            <a href="#logic" className="hover:text-white transition-colors">The Logic</a>
-            <a href="#models" className="hover:text-white transition-colors">Models</a>
-            <a href="#scaling" className="hover:text-white transition-colors">Enterprise</a>
-            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+          <div className="hidden xl:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-white/30 ml-20">
+            <a href="#logic" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">The Logic</a>
+            <a href="#models" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">Models</a>
+            <a href="#scaling" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">Enterprise</a>
+            <a href="#pricing" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">Pricing</a>
           </div>
 
-          <div className="flex items-center gap-6">
-            <button onClick={onLoginClick} className="text-xs font-bold uppercase tracking-widest text-white/60 hover:text-white transition-colors">Sign In</button>
-            <button onClick={onLoginClick} className="text-xs font-bold uppercase tracking-[0.15em] bg-white text-black px-6 py-3 rounded-full hover:bg-white/90 transition-all shadow-xl active:scale-95">Get Started</button>
+          <div className="flex items-center gap-10">
+            <button onClick={onLoginClick} className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all">Sign In</button>
+            <button onClick={onLoginClick} className="group relative px-8 py-4 bg-white text-black rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-[#ea3a5b] hover:text-white transition-all shadow-2xl active:scale-95 overflow-hidden">
+               <span className="relative z-10">Get Started</span>
+               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+            </button>
           </div>
         </div>
       </nav>
@@ -51,11 +57,10 @@ export default function LandingPage({ onLoginClick }) {
               Start The Debate
               <svg className="group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
             </button>
-            <div className="flex -space-x-4 opacity-60">
-               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-[#1a1b23] flex items-center justify-center text-xl">🧠</div>
-               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-[#1a1b23] flex items-center justify-center text-xl">🚀</div>
-               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-[#1a1b23] flex items-center justify-center text-xl">🐋</div>
-               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-[#1a1b23] flex items-center justify-center text-xl">🌩️</div>
+            <div className="flex -space-x-4 opacity-80">
+               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-white overflow-hidden flex items-center justify-center p-2 shadow-xl"><img src="/chatgpt-icon.webp" alt="GPT" className="w-full h-full object-contain" /></div>
+               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-black overflow-hidden flex items-center justify-center p-2 shadow-xl border-white/10"><img src="/grok-icon.webp" alt="Grok" className="w-full h-full object-contain" /></div>
+               <div className="w-12 h-12 rounded-full border-4 border-[#09090b] bg-[#001428] overflow-hidden flex items-center justify-center p-1 shadow-xl"><img src="/deepseek-logo-icon.webp" alt="DeepSeek" className="w-full h-full object-contain" /></div>
             </div>
             <span className="text-xs font-bold text-white/20 uppercase tracking-widest">+ 5 Models Deliberating</span>
           </div>
@@ -83,18 +88,18 @@ export default function LandingPage({ onLoginClick }) {
                    <div className="h-[2px] w-12 bg-gradient-to-r from-white/5 via-[#ea3a5b]/40 to-white/5" />
                    <div className="grid grid-cols-1 gap-3 relative">
                       <div className="absolute inset-0 bg-[#ea3a5b]/5 blur-2xl rounded-full" />
-                      <div className="w-40 py-3 glass rounded-xl border border-[#ea3a5b]/30 flex items-center gap-3 px-4 relative z-10 transition-all hover:translate-x-2">
-                         <span className="text-lg">🧠</span>
-                         <div className="text-left"><div className="text-[8px] font-bold opacity-30">TIER 1</div><div className="text-xs font-bold">GPT-4o</div></div>
-                      </div>
-                      <div className="w-40 py-3 glass rounded-xl border border-white/5 flex items-center gap-3 px-4 relative z-10 transition-all hover:translate-x-2">
-                         <span className="text-lg">🚀</span>
-                         <div className="text-left"><div className="text-[8px] font-bold opacity-30">TIER 1</div><div className="text-xs font-bold">Grok</div></div>
-                      </div>
-                      <div className="w-40 py-3 glass rounded-xl border border-white/5 flex items-center gap-3 px-4 relative z-10 transition-all hover:translate-x-2">
-                         <span className="text-lg">🐋</span>
-                         <div className="text-left"><div className="text-[8px] font-bold opacity-30">TIER 1</div><div className="text-xs font-bold">DeepSeek</div></div>
-                      </div>
+                       <div className="w-40 py-3 glass rounded-xl border border-[#ea3a5b]/30 flex items-center gap-3 px-4 relative z-10 transition-all hover:translate-x-2">
+                          <img src="/chatgpt-icon.webp" className="w-5 h-5 object-contain" alt="" />
+                          <div className="text-left"><div className="text-[8px] font-bold opacity-30">TIER 1</div><div className="text-xs font-bold">GPT-4o</div></div>
+                       </div>
+                       <div className="w-40 py-3 glass rounded-xl border border-white/5 flex items-center gap-3 px-4 relative z-10 transition-all hover:translate-x-2">
+                          <img src="/grok-icon.webp" className="w-5 h-5 object-contain" alt="" />
+                          <div className="text-left"><div className="text-[8px] font-bold opacity-30">TIER 1</div><div className="text-xs font-bold">Grok</div></div>
+                       </div>
+                       <div className="w-40 py-3 glass rounded-xl border border-white/5 flex items-center gap-3 px-4 relative z-10 transition-all hover:translate-x-2">
+                          <img src="/deepseek-logo-icon.webp" className="w-5 h-5 object-contain" alt="" />
+                          <div className="text-left"><div className="text-[8px] font-bold opacity-30">TIER 1</div><div className="text-xs font-bold">DeepSeek</div></div>
+                       </div>
                    </div>
                    <div className="h-[2px] w-12 bg-gradient-to-r from-white/5 via-[#ea3a5b]/40 to-white/5" />
                    <div className="w-48 py-5 glass-strong rounded-3xl border border-blue-500/40 relative z-10 transition-transform hover:scale-105 shadow-[0_0_50px_rgba(59,130,246,0.1)] text-center">
@@ -161,19 +166,21 @@ export default function LandingPage({ onLoginClick }) {
            
            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
-                { n: 'GPT-4o', p: 'OpenAI', i: '🧠', c: 'Sense Maker' },
-                { n: 'Grok-Beta', p: 'xAI', i: '🚀', c: 'Real-time Logic' },
-                { n: 'DeepSeek', p: 'DeepSeek', i: '🐋', c: 'Pure Reason' },
-                { n: 'Phi-4', p: 'Microsoft', i: '🌩️', c: 'Verification' },
-                { n: 'Ministral', p: 'Mistral', i: '🌪️', c: 'Final Arbiter' }
-              ].map((m, idx) => (
-                <div key={idx} className="p-8 rounded-[40px] border border-black/10 bg-neutral-50 hover:bg-black hover:text-white transition-all duration-500 group shadow-sm">
-                   <div className="text-4xl mb-6 group-hover:rotate-12 transition-transform">{m.i}</div>
-                   <div className="font-black text-xl mb-1">{m.n}</div>
-                   <div className="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-4 group-hover:text-white/60">{m.p}</div>
-                   <div className="text-[9px] font-black uppercase tracking-[0.2em] py-2 px-3 bg-black/5 group-hover:bg-white/10 rounded-lg inline-block">{m.c}</div>
-                </div>
-              ))}
+                 { n: 'GPT-4o', p: 'OpenAI', i: '/chatgpt-icon.webp', c: 'Sense Maker', bg: 'bg-white' },
+                 { n: 'Grok-Beta', p: 'xAI', i: '/grok-icon.webp', c: 'Real-time Logic', bg: 'bg-black' },
+                 { n: 'DeepSeek', p: 'DeepSeek', i: '/deepseek-logo-icon.webp', c: 'Pure Reason', bg: 'bg-[#001428]' },
+                 { n: 'Phi-4', p: 'Microsoft', i: '/chatgpt-icon.webp', c: 'Verification', bg: 'bg-white' },
+                 { n: 'Ministral', p: 'Mistral', i: '/grok-icon.webp', c: 'Final Arbiter', bg: 'bg-black' }
+               ].map((m, idx) => (
+                 <div key={idx} className="p-8 rounded-[40px] border border-black/10 bg-neutral-50 hover:bg-black hover:text-white transition-all duration-500 group shadow-sm">
+                    <div className={`w-12 h-12 rounded-2xl ${m.bg} flex items-center justify-center p-2 mb-6 group-hover:rotate-12 transition-transform shadow-lg border border-black/5`}>
+                       <img src={m.i} className="w-full h-full object-contain" alt="" />
+                    </div>
+                    <div className="font-black text-xl mb-1">{m.n}</div>
+                    <div className="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-4 group-hover:text-white/60">{m.p}</div>
+                    <div className="text-[9px] font-black uppercase tracking-[0.2em] py-2 px-3 bg-black/5 group-hover:bg-white/10 rounded-lg inline-block">{m.c}</div>
+                 </div>
+               ))}
            </div>
         </div>
       </section>
@@ -190,29 +197,29 @@ export default function LandingPage({ onLoginClick }) {
               <div className="glass p-16 rounded-[60px] border border-white/5 flex flex-col items-center text-center">
                  <div className="text-xs font-black tracking-[0.4em] uppercase text-white/20 mb-10">THE CITIZEN TIER</div>
                  <div className="text-7xl font-bold mb-4">$0</div>
-                 <p className="text-white/40 mb-12 text-lg">Perfect for validating simple claims.</p>
+                 <p className="text-white/40 mb-12 text-lg">Validate claims with peer consensus.</p>
                  <div className="w-full h-[1px] bg-white/5 mb-12" />
                  <ul className="space-y-6 mb-16 text-left w-full">
-                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> 15 Verified Inquiries per account</li>
+                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> 15 Verified Deliberations</li>
                     <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> Full access to the Flow Canvas</li>
-                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> Google Login & Persistence</li>
+                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> Dynamic Shared Archives</li>
                  </ul>
-                 <button onClick={onLoginClick} className="w-full py-5 rounded-3xl border border-white/10 font-bold hover:bg-white/5 transition-all uppercase tracking-[0.2em] text-xs">Start Now</button>
+                 <button onClick={onLoginClick} className="w-full py-5 rounded-3xl border border-white/10 font-bold hover:bg-white/5 transition-all uppercase tracking-[0.2em] text-xs">Access Now</button>
               </div>
               
               <div className="glass-strong p-16 rounded-[60px] border border-[#ea3a5b]/30 flex flex-col items-center text-center relative shadow-[0_0_100px_rgba(234,58,91,0.1)]">
-                 <div className="absolute top-10 right-10 bg-[#ea3a5b] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest animate-bounce">THE ONLY OPTION</div>
-                 <div className="text-xs font-black tracking-[0.4em] uppercase text-[#ea3a5b] mb-10">THE PARLIAMENTARIAN</div>
-                 <div className="text-7xl font-bold mb-4">$29</div>
-                 <p className="text-white/60 mb-12 text-lg font-medium">Unrestricted objective power.</p>
+                 <div className="absolute top-10 right-10 bg-[#ea3a5b] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest animate-bounce">ELITE ACCESS</div>
+                 <div className="text-xs font-black tracking-[0.4em] uppercase text-[#ea3a5b] mb-10">THE COUNCIL MEMBER</div>
+                 <div className="text-7xl font-bold mb-4">$49</div>
+                 <p className="text-white/60 mb-12 text-lg font-medium">Unrestricted truth orchestration.</p>
                  <div className="w-full h-[1px] bg-white/5 mb-12" />
                  <ul className="space-y-6 mb-16 text-left w-full">
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Unlimited Inquiries</li>
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Priority Reasoning Architecture</li>
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Custom Persona Templates</li>
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Private Data Vector Vault</li>
+                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Unlimited Deliberations</li>
+                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Priority Reasoning (Tier 4 Arbiter)</li>
+                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Custom Deliberation Personas</li>
+                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Private Data Vector Indexing</li>
                  </ul>
-                 <button onClick={onLoginClick} className="w-full py-5 rounded-3xl bg-[#ea3a5b] text-white font-black hover:bg-[#ff4e6e] transition-all uppercase tracking-[0.2em] text-xs shadow-2xl">Claim the Throne</button>
+                 <button onClick={onLoginClick} className="w-full py-5 rounded-3xl bg-[#ea3a5b] text-white font-black hover:bg-[#ff4e6e] transition-all uppercase tracking-[0.2em] text-xs shadow-2xl">Upgrade to Elite</button>
               </div>
            </div>
         </div>
@@ -223,8 +230,8 @@ export default function LandingPage({ onLoginClick }) {
          <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between gap-10 opacity-40 hover:opacity-100 transition-opacity duration-500">
             <div>
                <div className="flex items-center gap-3 mb-6">
-                 <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center font-bold text-xs uppercase">P</div>
-                 <span className="font-bold text-xs uppercase tracking-widest">AI Parliament</span>
+                 <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain opacity-80" />
+                 <span className="font-bold text-xs uppercase tracking-widest text-white">Council <span className="text-[#ea3a5b]">X</span></span>
                </div>
                <p className="max-w-xs text-[11px] leading-loose uppercase tracking-widest">A stateful orchestration protocol for unbiased deliberative AI reasoning.</p>
             </div>
@@ -244,7 +251,7 @@ export default function LandingPage({ onLoginClick }) {
             </div>
          </div>
          <div className="max-w-7xl mx-auto px-8 mt-32 text-center text-[9px] font-black uppercase tracking-[0.5em] text-white/10">
-            © 2026 AI PARLIAMENT SYSTEMS • WORLD CIVILIZATION PROTOCOL 01
+            © 2026 COUNCIL X SYSTEMS • WORLD CIVILIZATION PROTOCOL 01
          </div>
       </footer>
     </div>

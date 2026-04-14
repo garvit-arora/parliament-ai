@@ -59,7 +59,7 @@ export default function ParliamentFloor({
   return (
     <div
       ref={containerRef}
-      id="parliament-floor"
+      id="council-floor"
       className="relative flex-1 w-full overflow-hidden"
     >
       {/* Background gradient orb */}
@@ -161,10 +161,10 @@ export default function ParliamentFloor({
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center animate-fade-up">
             <div className="text-5xl mb-4 opacity-30">🏛️</div>
-            <p className="text-parliament-text-secondary text-sm">
+            <p className="text-council-text-secondary text-sm">
               Select models above to convene the Parliament
             </p>
-            <p className="text-parliament-text-muted text-xs mt-1">
+            <p className="text-council-text-muted text-xs mt-1">
               Choose 2 or more for a meaningful debate
             </p>
           </div>
@@ -174,7 +174,7 @@ export default function ParliamentFloor({
       {/* Idle state with models selected */}
       {selectedModels.length > 0 && isIdle && !responses?.length && (
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20">
-          <p className="text-parliament-text-muted text-xs glass px-4 py-2 rounded-full">
+          <p className="text-council-text-muted text-xs glass px-4 py-2 rounded-full">
             Parliament is assembled — present your query below
           </p>
         </div>
@@ -260,12 +260,12 @@ function ModelNode({ id, x, y, model, response, isThinking, isLeftHalf, nodeInde
             : `0 0 15px ${model.glowColor.replace('0.4', '0.1')}`,
         }}
       >
-        <span className="text-xl select-none">{model.icon}</span>
+        <img src={model.icon} className="w-8 h-8 object-contain select-none" alt="" />
 
         {/* Status indicator dot */}
         {response?.status === 'success' && !isThinking && (
           <div
-            className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-parliament-bg"
+            className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-council-bg"
             style={{ background: model.color }}
           />
         )}
@@ -286,7 +286,7 @@ function ModelNode({ id, x, y, model, response, isThinking, isLeftHalf, nodeInde
           style={bubbleStyle}
         >
           <div
-            className="glass-strong rounded-xl p-2.5 text-[10px] leading-relaxed text-parliament-text-primary/90"
+            className="glass-strong rounded-xl p-2.5 text-[10px] leading-relaxed text-council-text-primary/90"
             style={{
               borderColor: `${model.color}20`,
               boxShadow: `0 4px 20px rgba(0,0,0,0.3), 0 0 15px ${model.glowColor.replace('0.4', '0.05')}`,
@@ -385,7 +385,7 @@ function SpeakerNode({ x, y, response, isThinking }) {
             }}
           >
             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse-slow" />
-            <p className="text-[10px] font-medium text-parliament-text-primary/80 whitespace-nowrap">
+            <p className="text-[10px] font-medium text-council-text-primary/80 whitespace-nowrap">
               Verdict synthesized — view Transcript
             </p>
           </div>

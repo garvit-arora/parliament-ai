@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { signInWithGoogle } from '../firebase';
-import { authProfile } from '../api/parliament';
+import { authProfile } from '../api/council';
 
 export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
@@ -25,13 +25,31 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#09090b] text-white p-4 relative overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#ea3a5b]/5 blur-[120px] rounded-full pointer-events-none" />
+      
+      {/* Navigation */}
+      <nav className="fixed top-0 w-full z-50 bg-[#09090b]/60 backdrop-blur-xl border-b border-white/5">
+        <div className="w-full px-12 h-24 flex items-center justify-between">
+          <div className="flex items-center gap-4 cursor-pointer" onClick={() => window.location.href = '/'}>
+            <img src="/logo.png" alt="Council X" className="w-12 h-12 object-contain" />
+            <span className="font-black text-2xl tracking-tighter uppercase whitespace-nowrap">
+               <span className="text-white">Council</span>
+               <span className="text-[#ea3a5b] ml-1">X</span>
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-10">
+            <button onClick={() => window.location.href = '/'} className="text-[11px] font-black uppercase tracking-[0.2em] text-white/40 hover:text-white transition-all">Back to Home</button>
+          </div>
+        </div>
+      </nav>
       <div className="max-w-md w-full glass p-10 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         
         <div className="text-center">
-          <div className="w-16 h-16 bg-[#ea3a5b]/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(234,58,91,0.2)] border border-[#ea3a5b]/30 text-2xl">P</div>
-          <h2 className="text-3xl font-bold tracking-tight mb-2">Welcome to Parliament</h2>
-          <p className="text-white/50 text-sm mb-10">Sign in to access unbiased AI orchestration</p>
+          <h2 className="text-3xl font-black tracking-tight mb-2 uppercase"><span className="text-white">Council</span> <span className="text-[#ea3a5b]">X</span></h2>
+          <p className="text-white/50 text-sm mb-10 font-medium">Protocol Authenticated Session</p>
         </div>
 
         <div className="space-y-4">
