@@ -49,6 +49,12 @@ function MainApp() {
     }
   }, [activeSessionId, history, currentView]);
 
+  useEffect(() => {
+    if (history.length > 0) {
+      localStorage.setItem('parliament_history', JSON.stringify(history));
+    }
+  }, [history]);
+
   const activeSession = history.find(s => s.id === activeSessionId) || null;
   const filteredHistory = history.filter(s => 
     s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -172,12 +178,14 @@ function MainApp() {
            
            // Trigger save after state updates
            setTimeout(async () => {
-             const updatedHistory = JSON.parse(localStorage.getItem('parliament_history') || '[]');
-             const current = updatedHistory.find(s => s.id === currentSessionId);
-             if (current) {
-                try { await saveChat(currentUser.uid, currentSessionId, current.title, current.messages); }
-                catch (e) { console.error("Database sync failed", e); }
-             }
+             setHistory(prev => {
+                const current = prev.find(s => s.id === currentSessionId);
+                if (current) {
+                   saveChat(currentUser.uid, currentSessionId, current.title, current.messages)
+                     .catch(e => console.error("Database sync failed", e));
+                }
+                return prev;
+             });
            }, 500);
         }
       }, controller.signal);
