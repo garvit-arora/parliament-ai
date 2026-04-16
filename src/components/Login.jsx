@@ -55,8 +55,28 @@ export default function Login({ onLogin }) {
         <div className="space-y-4">
           {error && <div className="text-red-400 text-sm text-center bg-red-400/10 p-3 rounded-lg">{error}</div>}
 
+          <div className="flex items-center gap-2 mb-2 text-left">
+            <input 
+              type="checkbox" 
+              id="data-consent" 
+              className="w-4 h-4 cursor-pointer"
+              onChange={(e) => {
+                if (e.target.checked) setError(null);
+              }}
+            />
+            <label htmlFor="data-consent" className="text-xs text-white/60 cursor-pointer">
+              I accept that my data will be stored and used to train models for reward learning.
+            </label>
+          </div>
+
           <button
-            onClick={handleGoogleLogin}
+            onClick={() => {
+              if (!document.getElementById('data-consent').checked) {
+                setError("You must accept the data collection agreement before logging in.");
+                return;
+              }
+              handleGoogleLogin();
+            }}
             disabled={loading}
             className="w-full relative flex items-center justify-center gap-3 py-3 px-4 border border-white/10 rounded-xl hover:bg-white/5 disabled:opacity-50 transition-colors bg-[#111115]"
           >

@@ -35,17 +35,14 @@ export default function LandingPage({ onLoginClick }) {
       </nav>
 
       {/* Hero Section */}
-      <header className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
-        <div className="relative pt-40 pb-20 md:pt-64 md:pb-40 px-6 md:px-12 max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 animate-fade-in">
-            <div className="w-2 h-2 rounded-full bg-[#ea3a5b] animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/60">Forensic Logic Protocol Active</span>
-          </div>
-          
-          <h1 className="text-5xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-8 text-white">
-            UNBIASED <span className="text-white/10">TRUTH</span><br />
-            AT SCALE.
+      <header className="relative pt-24 pb-12 md:pt-32 md:pb-20 px-6 overflow-hidden">
+        <div className="relative pt-10 pb-10 md:pt-20 md:pb-20 px-6 md:px-12 max-w-7xl mx-auto text-center">
+          <h1 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter leading-tight mb-8 text-white">
+            THE ULTIMATE <span className="text-white/10">TRUTH</span><br />
+            ORCHESTRATION.
           </h1>
+          
+
           
           <p className="max-w-2xl mx-auto text-base md:text-lg text-white/40 font-medium leading-relaxed mb-12">
             The world's first adversarial AI orchestration engine. We pit models against each other to purge bias and extract the objective core of any inquiry.
@@ -61,7 +58,7 @@ export default function LandingPage({ onLoginClick }) {
       </header>
 
       {/* Logic Breakdown */}
-      <section id="logic" className="py-20 md:py-40 border-t border-white/5 bg-[#09090b] relative">
+      <section id="logic" className="py-20 md:py-52 border-t border-white/5 bg-[#09090b] relative">
          <div className="max-w-7xl mx-auto px-8">
             <div className="flex flex-col md:flex-row gap-20 items-center">
                <div className="flex-1">

@@ -95,6 +95,9 @@ export default function ChatInput({ onSend, isDisabled, selectedModelsCount }) {
         <p className="text-center text-[10px] text-council-text-muted/40 mt-2">
           Press Enter to submit • Multiple AI models will deliberate
         </p>
+        <p className="text-center text-[10px] text-[#ea3a5b] font-medium mt-3 px-4 max-w-lg mx-auto">
+          Please maintain a clear distinction between a <strong>biased</strong> question (which Parliament will dissect) and a <strong>harmful/sensitive</strong> question. Ensure your queries remain constructive and safe.
+        </p>
       </form>
     </div>
   );
