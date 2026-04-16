@@ -41,13 +41,11 @@ export default function FlowConfigModal({ isOpen, onClose, config, onSave }) {
     onClose();
   };
 
-  const isComplete = localConfig.layer1.length > 0 && localConfig.layer2 && localConfig.layer3 && localConfig.layer4;
+  const isComplete = localConfig.layer1.length > 0 && localConfig.layer2;
 
   const tabs = [
     { id: 'layer1', label: 'Tier 1: Deliberators', desc: 'Selection of primary perspectives.', state: localConfig.layer1.length > 0, count: localConfig.layer1.length },
-    { id: 'layer2', label: 'Tier 2: 1st Speaker', desc: 'Synthesis Architect.', state: !!localConfig.layer2, model: getModelById(localConfig.layer2) },
-    { id: 'layer3', label: 'Tier 3: The Auditor', desc: 'Bias Detection Layer.', state: !!localConfig.layer3, model: getModelById(localConfig.layer3) },
-    { id: 'layer4', label: 'Tier 4: Final Arbiter', desc: 'Closes the consensus loop.', state: !!localConfig.layer4, model: getModelById(localConfig.layer4) }
+    { id: 'layer2', label: 'Tier 2: Final Arbiter', desc: 'Synthesis & Quality Control.', state: !!localConfig.layer2, model: getModelById(localConfig.layer2) }
   ];
 
   return (

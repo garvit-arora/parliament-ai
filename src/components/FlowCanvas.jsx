@@ -9,8 +9,6 @@ export default function FlowCanvas({
   prompt,
   responsesL1,
   responseL2,
-  responseL3,
-  responseL4,
   isThinking,
   phase, 
   config
@@ -37,11 +35,9 @@ export default function FlowCanvas({
   useEffect(() => {
     const w = Math.max(containerSize.w, 1300);
     const h = 400;
-    const col0 = w * 0.10;
-    const col1 = w * 0.28;
-    const col2 = w * 0.48;
-    const col3 = w * 0.68;
-    const col4 = w * 0.88;
+    const col0 = w * 0.15;
+    const col1 = w * 0.45;
+    const col2 = w * 0.75;
 
     const initial = {};
     initial['input'] = { x: col0, y: h / 2 };
@@ -53,8 +49,6 @@ export default function FlowCanvas({
     });
 
     initial['l2'] = { x: col2, y: h / 2 };
-    initial['l3'] = { x: col3, y: h / 2 };
-    initial['l4'] = { x: col4, y: h / 2 };
 
     setNodePositions(initial);
   }, [config, containerSize.w]);
@@ -92,9 +86,7 @@ export default function FlowCanvas({
     if (!isThinking && phase !== 'done') return 'idle';
     if (nodeTier === 'input') return 'done';
     if (nodeTier === 'l1') return phase === 'querying_l1' ? 'thinking' : (responsesL1 ? 'done' : 'waiting');
-    if (nodeTier === 'l2') return phase === 'querying_l2' ? 'thinking' : (['querying_l3', 'querying_l4', 'done'].includes(phase) ? 'done' : 'waiting');
-    if (nodeTier === 'l3') return phase === 'querying_l3' ? 'thinking' : (['querying_l4', 'done'].includes(phase) ? 'done' : 'waiting');
-    if (nodeTier === 'l4') return phase === 'querying_l4' ? 'thinking' : (phase === 'done' ? 'done' : 'waiting');
+    if (nodeTier === 'l2') return phase === 'querying_l2' ? 'thinking' : (phase === 'done' ? 'done' : 'waiting');
     return 'idle';
   };
 
@@ -140,13 +132,11 @@ export default function FlowCanvas({
 
       <svg className="absolute inset-0 pointer-events-none z-0" width="100%" height="100%">
         {nodePositions['input'] && l1Nodes.map((n, i) => (
-          nodePositions[n.id] && <FlowLine key={n.id} x1={nodePositions['input'].x} y1={nodePositions['input'].y} x2={nodePositions[n.id].x} y2={nodePositions[n.id].y} isActive={['querying_l1', 'querying_l2', 'querying_l3', 'querying_l4', 'done'].includes(phase)} color="#10b981" />
+          nodePositions[n.id] && <FlowLine key={n.id} x1={nodePositions['input'].x} y1={nodePositions['input'].y} x2={nodePositions[n.id].x} y2={nodePositions[n.id].y} isActive={['querying_l1', 'querying_l2', 'done'].includes(phase)} color="#10b981" />
         ))}
         {l1Nodes.map((n, i) => (
-          nodePositions[n.id] && nodePositions['l2'] && <FlowLine key={`${n.id}-l2`} x1={nodePositions[n.id].x} y1={nodePositions[n.id].y} x2={nodePositions['l2'].x} y2={nodePositions['l2'].y} isActive={['querying_l2', 'querying_l3', 'querying_l4', 'done'].includes(phase)} color={n.model?.color || '#3b82f6'} />
+          nodePositions[n.id] && nodePositions['l2'] && <FlowLine key={`${n.id}-l2`} x1={nodePositions[n.id].x} y1={nodePositions[n.id].y} x2={nodePositions['l2'].x} y2={nodePositions['l2'].y} isActive={['querying_l2', 'done'].includes(phase)} color={n.model?.color || '#3b82f6'} />
         ))}
-        {nodePositions['l2'] && nodePositions['l3'] && <FlowLine x1={nodePositions['l2'].x} y1={nodePositions['l2'].y} x2={nodePositions['l3'].x} y2={nodePositions['l3'].y} isActive={['querying_l3', 'querying_l4', 'done'].includes(phase)} color={getModelById(config?.layer2 || 'gpt')?.color} /> }
-        {nodePositions['l3'] && nodePositions['l4'] && <FlowLine x1={nodePositions['l3'].x} y1={nodePositions['l3'].y} x2={nodePositions['l4'].x} y2={nodePositions['l4'].y} isActive={['querying_l4', 'done'].includes(phase)} color={getModelById(config?.layer3 || 'gpt')?.color} /> }
       </svg>
 
       {nodePositions['input'] && (
@@ -163,23 +153,9 @@ export default function FlowCanvas({
       ))}
 
       {nodePositions['l2'] && (
-        <AutomationNode x={nodePositions['l2'].x} y={nodePositions['l2'].y} status={getStatus('l2')} color={getModelById(config?.layer2 || 'gpt')?.color} title={getModelById(config?.layer2 || 'gpt')?.name} subtitle="Synthesis" icon={getModelById(config?.layer2 || 'gpt')?.icon} onMouseDown={(e) => handleMouseDown('l2', e)} onClick={() => setSelectedNode({ modelName: getModelById(config?.layer2 || 'gpt')?.name, icon: getModelById(config?.layer2 || 'gpt')?.icon, tier: 'Level 2', content: responseL2?.response })}>
-           {getStatus('l2') === 'thinking' && <div className="text-[9px] animate-pulse">Processing...</div>}
-           {responseL2 && <div className="text-[9px] text-white/40 italic">Review Output →</div>}
-        </AutomationNode>
-      )}
-
-      {nodePositions['l3'] && (
-        <AutomationNode x={nodePositions['l3'].x} y={nodePositions['l3'].y} status={getStatus('l3')} color={getModelById(config?.layer3 || 'gpt')?.color} title={getModelById(config?.layer3 || 'gpt')?.name} subtitle="Auditor" icon={getModelById(config?.layer3 || 'gpt')?.icon} onMouseDown={(e) => handleMouseDown('l3', e)} onClick={() => setSelectedNode({ modelName: getModelById(config?.layer3 || 'gpt')?.name, icon: getModelById(config?.layer3 || 'gpt')?.icon, tier: 'Level 3', content: responseL3?.response })}>
-           {getStatus('l3') === 'thinking' && <div className="text-[9px] animate-pulse">Auditing...</div>}
-           {responseL3 && <div className="text-[9px] text-white/40 italic">Review Output →</div>}
-        </AutomationNode>
-      )}
-
-      {nodePositions['l4'] && (
-        <AutomationNode x={nodePositions['l4'].x} y={nodePositions['l4'].y} status={getStatus('l4')} color={getModelById(config?.layer4 || 'gpt')?.color} title={getModelById(config?.layer4 || 'gpt')?.name} subtitle="Verdict" icon={getModelById(config?.layer4 || 'gpt')?.icon} onMouseDown={(e) => handleMouseDown('l4', e)} onClick={() => setSelectedNode({ modelName: getModelById(config?.layer4 || 'gpt')?.name, icon: getModelById(config?.layer4 || 'gpt')?.icon, tier: 'Level 4', content: responseL4?.response })}>
-           {getStatus('l4') === 'thinking' && <div className="text-[9px] animate-pulse">Finalizing...</div>}
-           {responseL4 && <div className="text-[9px] text-white/40 italic text-emerald-400 font-bold">Protocol Complete</div>}
+        <AutomationNode x={nodePositions['l2'].x} y={nodePositions['l2'].y} status={getStatus('l2')} color={getModelById(config?.layer2 || 'gpt')?.color} title={getModelById(config?.layer2 || 'gpt')?.name} subtitle="Final Verdict" icon={getModelById(config?.layer2 || 'gpt')?.icon} onMouseDown={(e) => handleMouseDown('l2', e)} onClick={() => setSelectedNode({ modelName: getModelById(config?.layer2 || 'gpt')?.name, icon: getModelById(config?.layer2 || 'gpt')?.icon, tier: 'Level 2', content: responseL2?.response })}>
+           {getStatus('l2') === 'thinking' && <div className="text-[9px] animate-pulse">Synthesizing...</div>}
+           {responseL2 && <div className="text-[9px] text-emerald-400 font-bold">Consensus Reached →</div>}
         </AutomationNode>
       )}
     </div>

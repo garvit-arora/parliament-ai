@@ -65,12 +65,10 @@ function MainApp() {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [pipelineConfig, setPipelineConfig] = useState({
     layer1: ['gpt', 'grok', 'deepseek'], 
-    layer2: 'gpt', 
-    layer3: 'gpt', 
-    layer4: 'gpt' 
+    layer2: 'gpt'
   });
 
-  const isPipelineConfigured = pipelineConfig.layer1.length > 0 && pipelineConfig.layer2 && pipelineConfig.layer3 && pipelineConfig.layer4;
+  const isPipelineConfigured = pipelineConfig.layer1.length > 0 && pipelineConfig.layer2;
 
   const loadUserChats = async (user) => {
     try {
@@ -112,10 +110,10 @@ function MainApp() {
         id: currentSessionId,
         title: prompt.slice(0, 30),
         timestamp: Date.now(),
-        messages: [{ prompt, responsesL1: null, responseL2: null, responseL3: null, responseL4: null, isProcessing: true }]
+        messages: [{ prompt, responsesL1: null, responseL2: null, isProcessing: true }]
       }, ...prev]);
     } else {
-      setHistory(prev => prev.map(s => s.id === currentSessionId ? { ...s, messages: [...s.messages, { prompt, responsesL1: null, responseL2: null, responseL3: null, responseL4: null, isProcessing: true }] } : s));
+      setHistory(prev => prev.map(s => s.id === currentSessionId ? { ...s, messages: [...s.messages, { prompt, responsesL1: null, responseL2: null, isProcessing: true }] } : s));
     }
 
     const updateMessage = (payload) => {
@@ -139,14 +137,14 @@ function MainApp() {
     if (activeSession) {
       activeSession.messages.forEach(m => {
         if (m.prompt) msgHistory.push({ role: "user", content: m.prompt });
-        if (m.responseL4?.response) msgHistory.push({ role: "assistant", content: m.responseL4.response });
+        if (m.responseL2?.response) msgHistory.push({ role: "assistant", content: m.responseL2.response });
       });
     }
 
     // Parallel Title Generation for New Sessions
     const existingSession = history.find(s => s.id === currentSessionId);
     if (!existingSession || existingSession.title === "New Session" || existingSession.title === "New Chat") {
-       generateChatTitle(prompt, pipelineConfig.layer4).then(data => {
+       generateChatTitle(prompt, pipelineConfig.layer2).then(data => {
           if (data.status === 'success') {
              setHistory(prev => prev.map(s => s.id === currentSessionId ? { ...s, title: data.title } : s));
           }
@@ -154,7 +152,7 @@ function MainApp() {
     }
 
     try {
-      await queryStreamGraph(currentUser.uid, prompt, msgHistory, pipelineConfig.layer1, pipelineConfig.layer2, pipelineConfig.layer3, pipelineConfig.layer4, (event) => {
+      await queryStreamGraph(currentUser.uid, prompt, msgHistory, pipelineConfig.layer1, pipelineConfig.layer2, (event) => {
         if (event.node === 'error_node') {
           toast.error(`Deliberation Error: ${event.state.error}`);
           return;
@@ -165,28 +163,28 @@ function MainApp() {
           setPhase('querying_l2'); 
         }
         else if (event.node === 'layer2_node') { 
-          updateMessage({ responseL2: event.state.l2_response }); 
-          setPhase('querying_l3'); 
-        }
-        else if (event.node === 'layer3_node') { 
-          updateMessage({ responseL3: event.state.l3_response }); 
-          setPhase(event.state.needs_reconsideration ? 'querying_l1' : 'querying_l4'); 
-        }
-        else if (event.node === 'layer4_node') {
-           updateMessage({ responseL4: event.state.l4_response, isProcessing: false });
-           setPhase('done');
-           
-           // Trigger save after state updates
-           setTimeout(async () => {
-             setHistory(prev => {
-                const current = prev.find(s => s.id === currentSessionId);
-                if (current) {
-                   saveChat(currentUser.uid, currentSessionId, current.title, current.messages)
-                     .catch(e => console.error("Database sync failed", e));
-                }
-                return prev;
-             });
-           }, 500);
+          const isDone = !event.state.needs_reconsideration;
+          updateMessage({ 
+            responseL2: event.state.l2_response,
+            isProcessing: !isDone
+          }); 
+          
+          if (isDone) {
+            setPhase('done');
+            // Trigger save after state updates
+            setTimeout(async () => {
+              setHistory(prev => {
+                 const current = prev.find(s => s.id === currentSessionId);
+                 if (current) {
+                    saveChat(currentUser.uid, currentSessionId, current.title, current.messages)
+                      .catch(e => console.error("Database sync failed", e));
+                 }
+                 return prev;
+              });
+            }, 500);
+          } else {
+            setPhase('querying_l1');
+          }
         }
       }, controller.signal);
     } catch (error) {
@@ -462,7 +460,7 @@ function MainApp() {
                                  </div>
 
                                  {/* AI Arbiter Response */}
-                                 {msg.responseL4 && (
+                                 {msg.responseL2 && (
                                    <div className="flex justify-start items-start gap-4 w-full">
                                       <div className="w-10 h-10 rounded-full border border-white/10 bg-[#121214] flex-shrink-0 flex items-center justify-center shadow-2xl relative">
                                          <div className="absolute inset-0 bg-blue-500/5 blur-xl rounded-full" />
@@ -470,7 +468,7 @@ function MainApp() {
                                       </div>
                                       <div className="flex flex-col items-start gap-3 flex-1 max-w-[90%]">
                                          <div className="bg-[#121214] border border-white/10 rounded-[40px] rounded-tl-sm px-10 py-8 prose prose-invert prose-p:leading-relaxed max-w-none w-full prose-lg shadow-2xl relative overflow-hidden">
-                                            <ReactMarkdown>{msg.responseL4.response}</ReactMarkdown>
+                                            <ReactMarkdown>{msg.responseL2.response}</ReactMarkdown>
                                          </div>
                                          <div className="flex items-center gap-6 pl-4 h-10">
                                             {!msg.feedback ? (

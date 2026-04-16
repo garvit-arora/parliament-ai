@@ -51,7 +51,7 @@ export default function ResponsePanel({ messages, onViewFlow }) {
                       </div>
                       <div className="prose prose-invert max-w-none text-white/90">
                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {msg.responseL4 ? msg.responseL4.response : "Error delivering Final Verdict."}
+                            {msg.responseL2 ? msg.responseL2.response : "Error delivering Final Verdict."}
                          </ReactMarkdown>
                       </div>
 

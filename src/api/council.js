@@ -40,7 +40,7 @@ export async function queryLayer4(prompt, l3_response, model) {
   return response.json();
 }
 
-export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, modelL3, modelL4, onEvent, signal) => {
+export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, onEvent, signal) => {
   const response = await fetch(`${API_BASE_URL}/ask/stream_graph`, {
     method: 'POST',
     headers: {
@@ -52,9 +52,7 @@ export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, 
       prompt: prompt,
       history: history,
       modelsL1: modelsL1,
-      modelL2: modelL2,
-      modelL3: modelL3,
-      modelL4: modelL4
+      modelL2: modelL2
     })
   });
 
