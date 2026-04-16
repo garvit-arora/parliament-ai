@@ -20,27 +20,7 @@ export async function queryLayer2(prompt, l1_responses, model) {
   return response.json();
 }
 
-export async function queryLayer3(prompt, l2_response, model) {
-  const response = await fetch(`${API_BASE_URL}/ask/layer3`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, l2_response, model }),
-  });
-  if (!response.ok) throw new Error('Layer 3 query failed');
-  return response.json();
-}
-
-export async function queryLayer4(prompt, l3_response, model) {
-  const response = await fetch(`${API_BASE_URL}/ask/layer4`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt, l3_response, model }),
-  });
-  if (!response.ok) throw new Error('Layer 4 query failed');
-  return response.json();
-}
-
-export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, onEvent, signal) => {
+export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, onEvent, signal, sessionId) => {
   const response = await fetch(`${API_BASE_URL}/ask/stream_graph`, {
     method: 'POST',
     headers: {
@@ -52,7 +32,8 @@ export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, 
       prompt: prompt,
       history: history,
       modelsL1: modelsL1,
-      modelL2: modelL2
+      modelL2: modelL2,
+      session_id: sessionId
     })
   });
 
@@ -88,6 +69,18 @@ export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, 
   }
 };
 
+export async function ingestFile(sessionId, file) {
+  const formData = new FormData();
+  formData.append('session_id', sessionId);
+  formData.append('file', file);
+  const response = await fetch(`${API_BASE_URL}/api/ingest`, {
+    method: 'POST',
+    body: formData
+  });
+  if (!response.ok) throw new Error('Ingestion failed');
+  return response.json();
+}
+
 export async function authProfile(uid, email, displayName) {
   const response = await fetch(`${API_BASE_URL}/api/auth/profile`, {
     method: 'POST',
@@ -98,6 +91,16 @@ export async function authProfile(uid, email, displayName) {
     const text = await response.text();
     throw new Error(`Auth failed (${response.status}): ${text.slice(0, 100)}`);
   }
+  return response.json();
+}
+
+export async function updateProfile(uid, data) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/update_profile`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ uid, ...data })
+  });
+  if (!response.ok) throw new Error('Update failed');
   return response.json();
 }
 

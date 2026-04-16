@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Target, Shield, Zap, ChevronDown, Menu, X, ArrowRight, Scale, Eye, Database, BarChart3, Sliders, CheckCircle2, FileText } from 'lucide-react';
 
 export default function LandingPage({ onLoginClick }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#09090b] text-white font-sans selection:bg-[#ea3a5b] selection:text-white overflow-x-hidden">
       {/* BACKGROUND DECOR */}
@@ -9,189 +12,325 @@ export default function LandingPage({ onLoginClick }) {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#09090b]/60 backdrop-blur-xl border-b border-white/5">
-        <div className="w-full px-6 md:px-12 h-24 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src="/logo.png" alt="Council X" className="w-10 h-10 md:w-12 md:h-12 object-contain filter drop-shadow-[0_5px_15px_rgba(234,58,91,0.4)]" />
-            <span className="font-black text-xl md:text-2xl tracking-tighter uppercase whitespace-nowrap">
-               <span className="text-white">Council</span>
-               <span className="text-[#ea3a5b] ml-1">X</span>
-            </span>
+      {/* NAVIGATION */}
+      <nav className="fixed top-0 w-full z-[100] bg-[#09090b]/80 backdrop-blur-md border-b border-white/10">
+        <div className="w-full px-8 md:px-12 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-4 cursor-pointer group" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <img src="/logo.png" alt="CouncilX Logo" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-500" />
+              <span className="font-black text-xl tracking-tighter uppercase text-white">
+                Council<span className="text-[#ea3a5b]">X</span>
+              </span>
+            </div>
+
+            <div className="hidden lg:flex items-center gap-8 ml-4">
+              <div className="relative group/menu py-6">
+                <button className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors flex items-center gap-1">
+                  Audit Tools <ChevronDown className="w-3 h-3 group-hover/menu:rotate-180 transition-transform" />
+                </button>
+                {/* MEGA MENU */}
+                <div className="absolute top-full left-0 w-72 bg-[#0d0d12] border border-white/10 rounded-2xl p-4 mt-2 shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto transition-all duration-300">
+                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-widest mb-4 px-2">Available Tools</div>
+                    <div className="space-y-1">
+                      {[
+                        { name: 'Data Scanner', icon: <Database size={14} />, desc: 'Index and scan forensic datasets' },
+                        { name: 'Bias Tuner', icon: <Sliders size={14} />, desc: 'Fine-tune bias detection thresholds' },
+                        { name: 'Unbiased News', icon: <Eye size={14} />, desc: 'Politically neutral news feed' },
+                        { name: 'Bias Reports', icon: <FileText size={14} />, desc: 'Full forensic audit transcripts' },
+                        { name: 'Fairness Map', icon: <Scale size={14} />, desc: 'Live 3D bias visualization' },
+                      ].map((t) => (
+                        <button key={t.name} onClick={onLoginClick} className="w-full text-left px-3 py-3 rounded-xl hover:bg-white/5 transition-colors flex items-center gap-4 group">
+                          <div className="w-8 h-8 rounded-lg bg-[#ea3a5b]/10 text-[#ea3a5b] flex items-center justify-center shrink-0 group-hover:bg-[#ea3a5b] group-hover:text-white transition-colors">
+                            {t.icon}
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-white/80 group-hover:text-white transition-colors">{t.name}</div>
+                            <div className="text-[10px] text-white/30 mt-0.5">{t.desc}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                </div>
+              </div>
+              <a href="#logic" className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">Technology</a>
+              <a href="#pricing" className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">Pricing</a>
+            </div>
           </div>
           
-          <div className="flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-white/30 ml-auto mr-12 hidden md:flex">
-            <a href="#logic" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">The Logic</a>
-            <a href="#models" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">Models</a>
-            <a href="#pricing" className="hover:text-[#ea3a5b] transition-all hover:tracking-[0.6em]">Pricing</a>
-          </div>
-
           <div className="flex items-center gap-4">
-            <button onClick={() => window.location.href = '/login'} className="px-6 md:px-8 py-3 bg-[#ea3a5b] text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#ea3a5b]/20 whitespace-nowrap">
-              Sign In
+            <button onClick={onLoginClick} className="px-8 py-2.5 bg-white text-black rounded-full text-[11px] font-bold uppercase tracking-widest hover:bg-[#ea3a5b] hover:text-white transition-all shadow-xl shadow-white/5">
+              Login
             </button>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <header className="relative pt-24 pb-12 md:pt-32 md:pb-20 px-6 overflow-hidden">
-        <div className="relative pt-10 pb-10 md:pt-20 md:pb-20 px-6 md:px-12 max-w-7xl mx-auto text-center">
-          <h1 className="text-4xl md:text-6xl lg:text-8xl font-black tracking-tighter leading-tight mb-8 text-white">
-            THE ULTIMATE <span className="text-white/10">TRUTH</span><br />
-            ORCHESTRATION.
+      {/* HERO SECTION */}
+      <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+        <div className="max-w-4xl mx-auto z-10 w-full lg:-mt-20">
+          <h1 className="text-6xl md:text-8xl font-medium tracking-tight mb-10 text-white animate-in fade-in slide-in-from-bottom-8 duration-1000 text-balance leading-tight">
+            Neutralize Bias in <br />
+            Automated Decisions.
           </h1>
-          
-
-          
-          <p className="max-w-2xl mx-auto text-base md:text-lg text-white/40 font-medium leading-relaxed mb-12">
-            The world's first adversarial AI orchestration engine. We pit models against each other to purge bias and extract the objective core of any inquiry.
+          <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white/40 font-normal leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
+            When programs decide who gets a job or a loan, historical data flaws become discriminatory mistakes. We build the layer that detects and fixes bias before it impacts lives.
           </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 animate-in fade-in slide-in-from-bottom-10 duration-1000 delay-300">
-            <button onClick={onLoginClick} className="group relative bg-[#ea3a5b] hover:bg-[#ff4e6e] text-white font-bold px-12 py-5 rounded-2xl transition-all shadow-[0_15px_60px_-15px_rgba(234,58,91,0.5)] flex items-center gap-3">
-              Start The Debate
-              <svg className="group-hover:translate-x-1 transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-400">
+            <button onClick={onLoginClick} className="bg-[#ea3a5b] text-white font-semibold px-10 py-4 rounded-full transition-all hover:bg-[#ff4e6e] flex items-center gap-3 text-lg shadow-xl shadow-[#ea3a5b]/20 hover:scale-105">
+              Run a Bias Audit
+              <Zap size={20} />
             </button>
+            <a href="#logic" className="text-lg font-medium text-white/30 hover:text-white transition-colors flex items-center gap-2 group">
+              How it works
+              <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
+            </a>
           </div>
         </div>
       </header>
 
-      {/* Logic Breakdown */}
-      <section id="logic" className="py-20 md:py-52 border-t border-white/5 bg-[#09090b] relative">
-         <div className="max-w-7xl mx-auto px-8">
-            <div className="flex flex-col md:flex-row gap-20 items-center">
-               <div className="flex-1">
-                  <div className="text-[#ea3a5b] font-bold text-xs uppercase tracking-[0.3em] mb-6">Built with LangGraph.</div>
-                  <h2 className="text-4xl md:text-7xl font-bold tracking-tighter mb-10 leading-[1] text-white">Adversarial by Design.</h2>
-                  <p className="text-white/50 text-lg md:text-xl leading-relaxed mb-10 font-light">
-                     Most AI systems give the first answer that feels right. Parliament is built differently. We use recursive loops where models audit their peers, forcing reconsiderations until consensus is mathematically logically sound.
-                  </p>
-                  <div className="space-y-6">
-                     <div className="flex items-start gap-5">
-                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-xl">🛡️</div>
-                        <div>
-                           <h4 className="font-bold text-lg mb-1">Bias Erasure</h4>
-                           <p className="text-white/40 text-sm">Our "Auditor" node is instructed to perform forensic logic checks, striking down any subjectivity.</p>
-                        </div>
-                     </div>
-                     <div className="flex items-start gap-5">
-                        <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-xl">⚡</div>
-                        <div>
-                           <h4 className="font-bold text-lg mb-1">Async Deliberation</h4>
-                           <p className="text-white/40 text-sm">Parallel execution across Azure OpenAI and Google clusters ensures speed without compromising consensus.</p>
-                        </div>
-                     </div>
+      {/* FORENSIC LOGIC SECTION */}
+      <section id="logic" className="min-h-screen flex items-center py-20 bg-[#09090b] border-t border-white/5 relative">
+        <div className="max-w-6xl mx-auto px-8 flex flex-col items-center w-full">
+          <div className="text-center mb-24 max-w-3xl">
+            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-6">Forensic Architecture</div>
+            <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-8">Inspect models for hidden unfairness.</h2>
+          </div>
+
+          <div className="w-full max-w-5xl mb-24 grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            {/* --- Pipeline 1: Standard Chat --- */}
+            <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-8 overflow-hidden group hover:border-white/20 transition-all">
+              <div className="absolute top-6 left-6 text-[9px] font-black uppercase tracking-[0.3em] text-[#ea3a5b] flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#ea3a5b] animate-pulse" />
+                Standard Audit
+              </div>
+              <div className="mt-10 flex flex-col gap-3">
+                {/* User Prompt */}
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-lg">💬</div>
+                  <div className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">User Prompt</div>
+                    <div className="text-xs font-medium text-white/60 italic">"Was the hiring process biased?"</div>
                   </div>
-               </div>
-               <div className="flex-1 w-full max-w-lg aspect-square glass rounded-[60px] border border-white/5 flex items-center justify-center relative group">
-                  <div className="absolute inset-0 bg-[#ea3a5b]/20 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                  <div className="text-9xl group-hover:scale-125 transition-transform duration-700">⚖️</div>
-               </div>
+                </div>
+                
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-px h-4 bg-white/20" />
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                  </div>
+                </div>
+                
+                {/* Layer 1 Models */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 text-lg">🧠</div>
+                  <div className="flex-1 bg-blue-500/5 border border-blue-500/20 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Layer 1 — 3 AI Models Deliberate</div>
+                    <div className="flex gap-2 flex-wrap">
+                      {['GPT','Grok','DeepSeek'].map(m => (
+                        <span key={m} className="px-2 py-1 bg-blue-500/10 text-blue-300 text-[9px] font-bold rounded-md uppercase tracking-widest">{m}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-px h-4 bg-white/20" />
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                  </div>
+                </div>
+                
+                {/* Final Arbiter */}
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#ea3a5b]/10 border border-[#ea3a5b]/30 flex items-center justify-center shrink-0 text-lg">⚖️</div>
+                  <div className="flex-1 bg-[#ea3a5b]/5 border border-[#ea3a5b]/20 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-[#ea3a5b] mb-1">Layer 2 — Final Arbiter</div>
+                    <div className="text-xs text-white/50">Synthesizes, detects bias, outputs verdict</div>
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-px h-4 bg-white/20" />
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                  </div>
+                </div>
+                
+                {/* Output */}
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 text-lg">✅</div>
+                  <div className="flex-1 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1">Bias-Corrected Answer</div>
+                    <div className="text-xs text-white/50">Neutral, verified, forensically graded</div>
+                  </div>
+                </div>
+              </div>
             </div>
-         </div>
+
+            {/* --- Pipeline 2: RAG Augmented --- */}
+            <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-8 overflow-hidden group hover:border-purple-500/30 transition-all">
+              <div className="absolute top-6 left-6 text-[9px] font-black uppercase tracking-[0.3em] text-purple-400 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                RAG Augmented Audit
+              </div>
+              <div className="mt-10 flex flex-col gap-3">
+                {/* User uploads doc */}
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-lg">📄</div>
+                  <div className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">Document Upload</div>
+                    <div className="text-xs font-medium text-white/60 italic">loan_applications_2023.csv</div>
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-px h-4 bg-white/20" />
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                  </div>
+                </div>
+
+                {/* Vector DB */}
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0"><Database size={18} className="text-purple-400" /></div>
+                  <div className="flex-1 bg-purple-500/5 border border-purple-500/20 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-1">Data Scanner — Vector Index</div>
+                    <div className="text-xs text-white/50">Chunks embedded into searchable memory</div>
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-px h-4 bg-white/20" />
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                  </div>
+                </div>
+
+                {/* Models + RAG context */}
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 text-lg">🧠</div>
+                  <div className="flex-1 bg-blue-500/5 border border-blue-500/20 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Layer 1 — Grounded on Your Data</div>
+                    <div className="text-xs text-white/50">Models receive retrieved data context alongside prompt</div>
+                  </div>
+                </div>
+
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="w-px h-4 bg-white/20" />
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                  </div>
+                </div>
+
+                {/* Arbiter */}
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#ea3a5b]/10 border border-[#ea3a5b]/30 flex items-center justify-center shrink-0 text-lg">⚖️</div>
+                  <div className="flex-1 bg-[#ea3a5b]/5 border border-[#ea3a5b]/20 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-black uppercase tracking-widest text-[#ea3a5b] mb-1">Arbiter — Dataset-Grounded Bias Grade</div>
+                    <div className="text-xs text-white/50">Cites specific rows, scores disparity rates</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
+            {[
+              { t: 'Measure Fairness', d: 'Quantify discrimination across race, gender, and age using statistical disparity metrics.', i: <Scale size={24} className="text-[#ea3a5b]" /> },
+              { t: 'Flag Disparities', d: 'Instantly isolate when automated decisions produce unequal outcomes for marginalized groups.', i: <Eye size={24} className="text-[#ea3a5b]" /> },
+              { t: 'Mitigate Harm', d: 'Implement real-time neural adjustments to neutralize historical flaws and ensure equity.', i: <Shield size={24} className="text-[#ea3a5b]" /> }
+            ].map((f, idx) => (
+              <div key={idx} className="space-y-6 flex flex-col items-center">
+                <div className="w-12 h-12 rounded-full bg-[#ea3a5b]/10 flex items-center justify-center mb-2">{f.i}</div>
+                <h4 className="text-xl font-bold text-white">{f.t}</h4>
+                <p className="text-white/40 text-sm leading-relaxed max-w-xs">{f.d}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
 
-      {/* Model Roster */}
-      <section id="models" className="py-20 md:py-40 bg-white text-black rounded-[40px] md:rounded-[80px] mx-4 my-10 shadow-[0_0_100px_rgba(255,255,255,0.1)]">
-        <div className="max-w-7xl mx-auto px-8">
-           <div className="flex flex-col md:flex-row justify-between items-end mb-12 md:mb-24 gap-8">
-              <div className="max-w-2xl">
-                 <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-6 leading-none">The roster of giants.</h2>
-                 <p className="text-black/50 text-lg md:text-xl font-medium">We only recruit the top 0.1% of weights available today.</p>
-              </div>
-              <button onClick={onLoginClick} className="px-10 py-5 bg-black text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 transition-transform">View Full Spec Sheet</button>
-           </div>
+      {/* SAFETY & TRUST */}
+      <section className="min-h-screen flex items-center py-20 bg-[#09090b] border-t border-white/5">
+        <div className="max-w-4xl mx-auto px-8 text-center w-full">
+           <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-10 leading-tight">A foundation built on <br /><span className="text-[#ea3a5b]">objective truth.</span></h2>
+           <p className="text-xl text-white/40 leading-relaxed font-normal mb-20 max-w-2xl mx-auto">
+              Our auditing protocol is hard-coded to prioritize equitable outcomes over flawed historical inputs.
+           </p>
            
-           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mt-20">
-              {[
-                 { n: 'GPT-4o', p: 'OpenAI', i: '/chatgpt-icon.webp', c: 'Sense Maker', bg: 'bg-white' },
-                 { n: 'Grok-Beta', p: 'xAI', i: '/grok-icon.webp', c: 'Real-time Logic', bg: 'bg-black' },
-                 { n: 'DeepSeek', p: 'DeepSeek', i: '/deepseek-logo-icon.webp', c: 'Pure Reason', bg: 'bg-[#001428]' },
-                 { n: 'Phi-4', p: 'Microsoft', i: '/chatgpt-icon.webp', c: 'Verification', bg: 'bg-white' },
-                 { n: 'Ministral', p: 'Mistral', i: '/grok-icon.webp', c: 'Final Arbiter', bg: 'bg-black' }
-               ].map((m, idx) => (
-                 <div key={idx} className="p-8 rounded-[40px] border border-black/10 bg-neutral-50 hover:bg-black hover:text-white transition-all duration-500 group shadow-sm">
-                    <div className={`w-12 h-12 rounded-2xl ${m.bg} flex items-center justify-center p-2 mb-6 group-hover:rotate-12 transition-transform shadow-lg border border-black/5`}>
-                       <img src={m.i} className="w-full h-full object-contain" alt="" />
-                    </div>
-                    <div className="font-black text-xl mb-1">{m.n}</div>
-                    <div className="text-[10px] font-bold opacity-40 uppercase tracking-widest mb-4 group-hover:text-white/60">{m.p}</div>
-                    <div className="text-[9px] font-black uppercase tracking-[0.2em] py-2 px-3 bg-black/5 group-hover:bg-white/10 rounded-lg inline-block">{m.c}</div>
-                 </div>
-               ))}
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+              <div className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
+                 <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-widest text-xs">Constitutional Neutrality</h4>
+                 <p className="text-sm text-white/30 leading-relaxed">Models are hard-coded to ignore demographic proxies that drive unfair rejection or acceptance rates.</p>
+              </div>
+              <div className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
+                 <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-widest text-xs">Zero-Bias Persistence</h4>
+                 <p className="text-sm text-white/30 leading-relaxed">Every forensic audit is stateful but ephemeral—your sensitive data is processed for verification, never stored for model training.</p>
+              </div>
            </div>
         </div>
       </section>
 
       {/* PRICING */}
-      <section id="pricing" className="py-40 relative">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="pricing" className="min-h-screen flex items-center py-20 relative bg-[#09090b]">
+        <div className="max-w-7xl mx-auto px-8 w-full">
            <div className="text-center mb-24">
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tighter mb-4">Pricing for Precedence</h2>
-              <p className="text-white/40 text-xl">Limited access for free thinkers, unlimited for power players.</p>
+              <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 italic uppercase">Pricing</h2>
+              <p className="text-white/30 text-lg uppercase tracking-widest font-bold">Scale your auditing protocols.</p>
            </div>
-
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
-              <div className="glass-strong p-8 md:p-16 rounded-[40px] md:rounded-[60px] border border-white/5 flex flex-col items-center text-center">
-                 <div className="text-xs font-black tracking-[0.4em] uppercase text-white/20 mb-10">THE CITIZEN TIER</div>
-                 <div className="text-6xl md:text-7xl font-bold mb-4">$0</div>
-                 <p className="text-white/40 mb-12 text-base md:text-lg">Validate claims with peer consensus.</p>
-                 <div className="w-full h-[1px] bg-white/5 mb-12" />
-                 <ul className="space-y-6 mb-16 text-left w-full">
-                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> 15 Verified Deliberations</li>
-                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> Full access to the Flow Canvas</li>
-                    <li className="flex items-center gap-4 text-white/70 font-bold text-sm"><span className="text-[#ea3a5b]">✓</span> Dynamic Shared Archives</li>
-                 </ul>
-                 <button onClick={onLoginClick} className="w-full py-5 rounded-3xl border border-white/10 font-bold hover:bg-white/5 transition-all uppercase tracking-[0.2em] text-xs">Access Now</button>
-              </div>
-              
-              <div className="glass-strong p-8 md:p-16 rounded-[40px] md:rounded-[60px] border border-[#ea3a5b]/30 flex flex-col items-center text-center relative shadow-[0_0_100px_rgba(234,58,91,0.1)]">
-                 <div className="absolute top-6 right-6 md:top-10 md:right-10 bg-[#ea3a5b] text-white text-[9px] font-black px-4 py-2 rounded-full uppercase tracking-widest animate-bounce">ELITE ACCESS</div>
-                 <div className="text-xs font-black tracking-[0.4em] uppercase text-[#ea3a5b] mb-10">THE COUNCIL MEMBER</div>
-                 <div className="text-6xl md:text-7xl font-bold mb-4">$49</div>
-                 <p className="text-white/60 mb-12 text-base md:text-lg font-medium">Unrestricted truth orchestration.</p>
-                 <div className="w-full h-[1px] bg-white/5 mb-12" />
-                 <ul className="space-y-6 mb-16 text-left w-full">
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Unlimited Deliberations</li>
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Priority Reasoning (Tier 4 Arbiter)</li>
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Custom Deliberation Personas</li>
-                    <li className="flex items-center gap-4 text-white font-black text-sm"><span className="text-[#ea3a5b]">✓</span> Private Data Vector Indexing</li>
-                 </ul>
-                 <button onClick={onLoginClick} className="w-full py-5 rounded-3xl bg-[#ea3a5b] text-white font-black hover:bg-[#ff4e6e] transition-all uppercase tracking-[0.2em] text-xs shadow-2xl">Upgrade to Elite</button>
-              </div>
+           
+           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
+             <div className="p-12 rounded-[40px] bg-white/[0.02] border border-white/5 flex flex-col items-center text-center">
+               <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 mb-8">Auditor</div>
+               <div className="text-7xl font-medium mb-10 text-white leading-none tracking-tighter">$0</div>
+               <ul className="space-y-6 mb-16 text-left w-full text-white/40 text-sm font-medium">
+                 <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">○ 10 Fairness Scans</li>
+                 <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">○ Standard Reporting</li>
+                 <li className="flex items-center gap-4 tracking-widest uppercase text-[10px]">○ Public Record</li>
+               </ul>
+               <button onClick={onLoginClick} className="w-full py-5 rounded-2xl border border-white/10 text-white font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all">Start Audit</button>
+             </div>
+             
+             <div className="p-12 rounded-[40px] bg-white/[0.02] border border-[#ea3a5b]/30 flex flex-col items-center text-center relative overflow-hidden group">
+               <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-125 transition-transform"><Zap className="text-[#ea3a5b]" size={60} /></div>
+               <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#ea3a5b] mb-8 mt-4">Compliance Hero</div>
+               <div className="text-7xl font-medium mb-10 text-white leading-none tracking-tighter">$49</div>
+               <ul className="space-y-6 mb-16 text-left w-full text-white/70 text-sm font-medium">
+                 <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">● Unlimited Audit Sessions</li>
+                 <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">● Full Adversarial Arbiter</li>
+                 <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">● Private Dataset Isolation</li>
+                 <li className="flex items-center gap-4 tracking-widest uppercase text-[10px]">● Board-Ready Compliance PDFs</li>
+               </ul>
+               <button onClick={onLoginClick} className="w-full py-5 rounded-2xl bg-[#ea3a5b] text-white font-black text-xs uppercase tracking-widest hover:bg-[#ff4e6e] transition-all shadow-xl shadow-[#ea3a5b]/30">Unlock Full Protocol</button>
+             </div>
            </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="py-32 border-t border-white/5 bg-[#09090b] relative">
-         <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between gap-16 md:gap-10 opacity-40 hover:opacity-100 transition-opacity duration-500">
-            <div>
-               <div className="flex items-center gap-3 mb-6">
-                 <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain opacity-80" />
-                 <span className="font-bold text-xs uppercase tracking-widest text-white">Council <span className="text-[#ea3a5b]">X</span></span>
-               </div>
-               <p className="max-w-xs text-[11px] leading-loose uppercase tracking-widest">A stateful orchestration protocol for unbiased deliberative AI reasoning.</p>
+      <footer className="pt-20 pb-20 bg-[#09090b] border-t border-white/5 overflow-hidden">
+        <div className="w-full px-8 md:px-20 text-center">
+            <h1 className="text-[15vw] font-[1000] tracking-[-0.08em] leading-[0.8] uppercase text-white select-none pointer-events-none opacity-90 mb-20">
+              COUNCIL<span className="text-[#ea3a5b]">X</span>
+            </h1>
+            <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-white/10 gap-8">
+              <div className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">
+                © 2026 COUNCILX SYSTEMS • GLOBAL PROTOCOL 01
+              </div>
+              <div className="flex gap-10">
+                {['Twitter', 'Discord', 'Github'].map(s => (
+                  <div key={s} className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30 hover:text-white transition-colors cursor-pointer">{s}</div>
+                ))}
+              </div>
             </div>
-            <div className="flex flex-wrap md:flex-nowrap gap-x-20 gap-y-12">
-               <div className="space-y-4">
-                  <div className="font-black text-[10px] uppercase tracking-[0.3em] mb-6 whitespace-nowrap">Technology</div>
-                  <div className="text-[10px] font-bold uppercase hover:text-white transition-colors cursor-pointer">LangGraph Core</div>
-                  <div className="text-[10px] font-bold uppercase hover:text-white transition-colors cursor-pointer">Azure OpenAI</div>
-                  <div className="text-[10px] font-bold uppercase hover:text-white transition-colors cursor-pointer">Vector Verification</div>
-               </div>
-               <div className="space-y-4">
-                  <div className="font-black text-[10px] uppercase tracking-[0.3em] mb-6 whitespace-nowrap">Legal</div>
-                  <div className="text-[10px] font-bold uppercase hover:text-white transition-colors cursor-pointer">Privacy Matrix</div>
-                  <div className="text-[10px] font-bold uppercase hover:text-white transition-colors cursor-pointer">Usage Agreement</div>
-                  <div className="text-[10px] font-bold uppercase hover:text-white transition-colors cursor-pointer">Ethics Protocol</div>
-               </div>
-            </div>
-         </div>
-         <div className="max-w-7xl mx-auto px-8 mt-32 text-center text-[9px] font-black uppercase tracking-[0.5em] text-white/10">
-            © 2026 COUNCIL X SYSTEMS • WORLD CIVILIZATION PROTOCOL 01
-         </div>
+        </div>
       </footer>
     </div>
   );

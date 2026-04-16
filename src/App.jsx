@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import FlowCanvas from './components/FlowCanvas';
 import ChatHistory from './components/ChatHistory';
 import ResponsePanel from './components/ResponsePanel';
@@ -12,310 +12,415 @@ import NotFound from './components/NotFound';
 import AccountPage from './components/AccountPage';
 import Onboarding from './components/Onboarding';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
-import { queryStreamGraph, getChats, saveChat, deleteChat, generateChatTitle } from './api/council';
+import DataScanner from './components/audit/DataScanner';
+import BiasTuner from './components/audit/BiasTuner';
+import FairnessTracker from './components/audit/FairnessTracker';
+import TrustReport from './components/audit/TrustReport';
+import NewsProtocol from './components/audit/NewsProtocol';
+import Whitepaper from './components/audit/Whitepaper';
+import { queryStreamGraph, getChats, saveChat, deleteChat, generateChatTitle, ingestFile, authProfile } from './api/council';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import toast, { Toaster } from 'react-hot-toast';
+import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
+import { Database, Scale, Sliders, CheckCircle2, Download, Search, Settings, Share2, LogOut, User, Plus, Trash2, Cpu, FileText, Zap, Sparkles, ChevronDown, Menu, X, ArrowRight, Globe, Lock, Mic, Volume2, Paperclip, Send, MessageSquare } from 'lucide-react';
+
+const TAGLINES = [
+  "Search something controversial",
+  "Deliberate on global bias",
+  "Audit the digital consensus",
+  "Uncover hidden agendas",
+  "Cross-examine neural logic",
+  "Investigate systemic neutrality",
+  "Challenge the standard narrative",
+  "Probe for ideological drift",
+  "Analyze the forensic data stream",
+  "Execute objective deliberation",
+  "Scan for partisan influence",
+  "Map the fairness of a claim",
+  "Sync with the Council's wisdom",
+  "Audit the consensus node",
+  "Initiate a deep search query",
+  "Delve into the data scanner",
+  "Tune the bias of the council",
+  "Explore the unbiased news protocol",
+  "Review the forensic trust reports",
+  "Deliberate with the AI Parliament"
+];
+
+function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, handleNewChat, history, handleSelectSession, handleDeleteSession, activeSessionId, setIsSearchOpen, navigate, handleLogout, activeSession, currentView, setCurrentView, handleShare }) {
+  const location = useLocation();
+  
+  const getPageTitle = () => {
+     const path = location.pathname;
+     if (path === '/audit/scanner') return 'Data Scanner';
+     if (path === '/audit/tuner') return 'Bias Tuner';
+     if (path === '/audit/tracker') return 'Fairness Map';
+     if (path === '/audit/report') return 'Bias Reports';
+     if (path === '/audit/news') return 'Unbiased News';
+     return null;
+  };
+
+  const pageTitle = getPageTitle();
+
+  return (
+    <div className="h-screen w-full flex bg-[#09090b] text-white overflow-hidden relative font-sans">
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* SIDEBAR */}
+      <div className={`
+        transition-all duration-300 border-r border-white/5 bg-[#0d0d12] flex flex-col flex-shrink-0 z-[120]
+        ${sidebarOpen ? 'w-[280px] opacity-100' : 'w-0 opacity-0 overflow-hidden'}
+        ${sidebarOpen ? 'fixed inset-y-0 left-0 lg:relative' : ''}
+      `}>
+          <div className="w-[280px] h-full flex flex-col p-4">
+             <div className="flex items-center justify-between mb-8 px-2">
+                <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+                   <img src="/logo.png" alt="" className="w-8 h-8 object-contain" />
+                   <span className="font-black text-sm uppercase tracking-[0.2em] text-white/50">Council<span className="text-[#ea3a5b]">X</span></span>
+                </div>
+                <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-white/5 rounded-lg text-white/20 hover:text-white transition-colors"><Search size={16} /></button>
+             </div>
+             
+             <button onClick={handleNewChat} className="w-full h-12 bg-[#1a1b26] border border-white/5 rounded-2xl text-sm font-bold mb-8 flex items-center justify-center gap-3 hover:bg-white/5 transition-all group">
+                <Plus size={16} className="text-[#ea3a5b] group-hover:rotate-90 transition-transform" />
+                New Chat
+             </button>
+             
+             <div className="mb-8 px-2">
+                <div className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 px-1">Audit Tools</div>
+                <div className="space-y-1">
+                   {[
+                     { n: 'Data Scanner', i: <Database size={16} />, path: '/audit/scanner' },
+                     { n: 'Bias Tuner', i: <Sliders size={16} />, path: '/audit/tuner' },
+                     { n: 'Unbiased News', i: <Globe size={16} />, path: '/audit/news' },
+                     { n: 'Bias Reports', i: <FileText size={16} />, path: '/audit/report' },
+                     { n: 'Fairness Map', i: <Scale size={16} />, path: '/audit/tracker' }
+                   ].map((t) => (
+                     <button 
+                        key={t.n} 
+                        onClick={() => navigate(t.path)} 
+                        className={`w-full flex items-center gap-4 px-3 py-3 rounded-2xl text-[13px] font-bold transition-all group ${location.pathname === t.path ? 'bg-[#ea3a5b]/10 text-[#ea3a5b]' : 'text-white/30 hover:bg-white/5 hover:text-white'}`}
+                      >
+                        <span className={`transition-opacity ${location.pathname === t.path ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>{t.i}</span>
+                        {t.n}
+                     </button>
+                   ))}
+                </div>
+             </div>
+
+             <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                <ChatHistory history={history} onSelectSession={handleSelectSession} onDeleteSession={(e, id) => handleDeleteSession(e, history.find(s => (s.id === id || s.session_id === id || s._id === id)))} activeIndex={history.findIndex(s => (s.id === activeSessionId || s.session_id === activeSessionId || s._id === activeSessionId))} />
+             </div>
+          </div>
+      </div>
+
+      <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
+        <header className="flex items-center justify-between px-8 py-6 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.04] z-[100] sticky top-0 h-[80px]">
+           <div className="flex items-center gap-6 overflow-hidden max-w-[50%]">
+              <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg lg:hidden flex-shrink-0"><Menu size={20} /></button>
+              
+              {pageTitle ? (
+                 <div className="text-xl font-bold tracking-tight text-white whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">{pageTitle}</div>
+              ) : activeSession && location.pathname === '/' ? (
+                <>
+                  <div className="flex items-center bg-white/5 rounded-2xl p-1 border border-white/5 overflow-hidden flex-shrink-0">
+                     <button onClick={() => setCurrentView('flow')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Process Map</button>
+                     <button onClick={() => setCurrentView('transcript')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Transcript</button>
+                  </div>
+                  <div className="h-4 w-[1px] bg-white/10 flex-shrink-0 mx-2" />
+                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 truncate italic flex-grow">{activeSession.title}</div>
+                </>
+              ) : (
+                <div className="w-8" />
+              )}
+           </div>
+           
+           <div className="flex items-center gap-4">
+              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-white flex items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+                <Share2 size={14} className="group-hover:text-[#ea3a5b] transition-colors" />
+                Share
+              </button>
+              
+              <div className="h-4 w-[1px] bg-white/10 mx-2" />
+              
+              <button onClick={() => navigate('/account')} className="flex items-center gap-3 group px-2 py-1 rounded-full hover:bg-white/5 transition-all">
+                 <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold overflow-hidden border border-white/10 shadow-lg shadow-indigo-500/20 group-hover:border-indigo-400/50 transition-colors">
+                    {currentUser.photoURL ? <img src={currentUser.photoURL} alt="" /> : (currentUser.displayName?.[0] || 'U')}
+                 </div>
+              </button>
+
+              <button onClick={handleLogout} className="p-2 text-white/20 hover:text-rose-500 transition-colors"><LogOut size={16} /></button>
+           </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto">
+           {children}
+        </main>
+      </div>
+    </div>
+  );
+}
 
 function MainApp() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('parliament_user');
     return saved ? JSON.parse(saved) : null;
   });
 
-  // UI state
-  const [sidebarOpen] = useState(true);
-  const [currentView, setCurrentView] = useState('flow'); // 'flow' | 'transcript'
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  
+  useEffect(() => {
+    const handleResize = () => {
+      // Auto-close sidebar on mobile/tablet when resizing
+      if (window.innerWidth < 1024 && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarOpen]);
+
+  const [currentView, setCurrentView] = useState('flow'); 
   const [inputValue, setInputValue] = useState('');
-  const [isPremiumModalOpen, setIsPremiumModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [attachedFile, setAttachedFile] = useState(null);
   
-  // Execution state (for the canvas)
+  const [modelsL1, setModelsL1] = useState(['gpt', 'grok', 'deepseek']);
+  const [modelL2, setModelL2] = useState('gpt');
+  const [isListening, setIsListening] = useState(false);
+  const [isInputExpanded, setIsInputExpanded] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [phase, setPhase] = useState(null); 
-
-  // History & Sessions state
   const [history, setHistory] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
   const scrollRef = useRef(null);
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({
-        top: scrollRef.current.scrollHeight,
-        behavior: 'smooth'
-      });
-    }
-  }, [activeSessionId, history, currentView]);
+  // RANDOM TAGLINE
+  const randomTagline = useMemo(() => {
+     return TAGLINES[Math.floor(Math.random() * TAGLINES.length)];
+  }, [activeSessionId]);
 
   useEffect(() => {
-    if (history.length > 0) {
-      localStorage.setItem('parliament_history', JSON.stringify(history));
-    }
-  }, [history]);
+    if (currentUser) { getChats(currentUser.uid).then(data => { if (data.status === 'success') setHistory(data.chats); }).catch(console.error); }
+  }, [currentUser]);
 
-  const activeSession = history.find(s => s.id === activeSessionId) || null;
-  const filteredHistory = history.filter(s => 
-    s.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    s.messages.some(m => m.prompt.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const activeSession = history.find(s => (s.id === activeSessionId || s.session_id === activeSessionId || s._id === activeSessionId));
+  const filteredHistory = history.filter(s => s.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
-  // Pipeline configuration
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [pipelineConfig, setPipelineConfig] = useState({
-    layer1: ['gpt', 'grok', 'deepseek'], 
-    layer2: 'gpt'
-  });
-
-  const isPipelineConfigured = pipelineConfig.layer1.length > 0 && pipelineConfig.layer2;
-
-  const loadUserChats = async (user) => {
+  // AUTH HANDLERS
+  const handleLogin = async (user) => {
     try {
-      const resp = await getChats(user.uid);
-      if (resp.chats) {
-        setHistory(resp.chats.map(dbChat => ({
-           id: dbChat.session_id,
-           title: dbChat.title,
-           timestamp: dbChat._id ? parseInt(dbChat._id.substring(0,8), 16) * 1000 : Date.now(),
-           messages: dbChat.messages
-        })));
+      const profile = await authProfile(user.uid, user.email, user.displayName);
+      const fullUser = { ...user, ...profile.user };
+      setCurrentUser(fullUser);
+      localStorage.setItem('parliament_user', JSON.stringify(fullUser));
+      navigate('/');
+    } catch (err) {
+      toast.error("Auth sync failed.");
+    }
+  };
+
+  const handleLogout = () => { setCurrentUser(null); setHistory([]); setActiveSessionId(null); localStorage.removeItem('parliament_user'); navigate('/login'); };
+
+  // AZURE STT
+  const startSTT = () => {
+    const speechKey = import.meta.env.VITE_AZURE_SPEECH_KEY;
+    const speechRegion = import.meta.env.VITE_AZURE_SPEECH_REGION;
+    if (!speechKey) return toast.error("Azure Keys Missing.");
+
+    const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(speechKey, speechRegion);
+    speechConfig.speechRecognitionLanguage = "en-US";
+    const audioConfig = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+    const recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+
+    setIsListening(true);
+    recognizer.recognizeOnceAsync(result => {
+      if (result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
+        setInputValue(prev => prev + result.text);
       }
-    } catch(err) { console.error(err); }
+      setIsListening(false);
+      recognizer.close();
+    });
   };
 
-  useEffect(() => { if (currentUser) loadUserChats(currentUser); }, [currentUser]);
+  // AZURE TTS
+  const playTTS = (text) => {
+    const speechKey = import.meta.env.VITE_AZURE_SPEECH_KEY;
+    const speechRegion = import.meta.env.VITE_AZURE_SPEECH_REGION;
+    if (!speechKey) return toast.error("Azure Keys Missing.");
 
-  const handleLogin = (user) => {
-    setCurrentUser(user);
-    localStorage.setItem('parliament_user', JSON.stringify(user));
-    if (user.isNewUser) navigate('/onboarding');
-    else navigate('/dashboard');
+    const speechConfig = SpeechSDK.SpeechConfig.fromSubscription(speechKey, speechRegion);
+    speechConfig.speechSynthesisVoiceName = "en-US-AndrewNeural";
+    const synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+
+    synthesizer.speakTextAsync(text, result => {
+      synthesizer.close();
+    }, error => {
+      console.error(error);
+      synthesizer.close();
+    });
   };
 
-  const handleSend = useCallback(async (overridingPrompt = null) => {
-    const prompt = (overridingPrompt || inputValue).trim();
-    if (!prompt || !isPipelineConfigured || !currentUser || isThinking) return;
+  const handleSend = useCallback(async (prompt = inputValue) => {
+    if (!prompt.trim() || isThinking) return;
+    setIsThinking(true);
+    
+    const currentSessionId = activeSessionId || `session_${Date.now()}`;
+    if (!activeSessionId) {
+      setActiveSessionId(currentSessionId);
+      setHistory(prev => [{ id: currentSessionId, title: "Audit Started", timestamp: Date.now(), messages: [] }, ...prev]);
+    }
+
+    let hasFile = false;
+    if (attachedFile) {
+       hasFile = true;
+       setPhase('reading_file');
+       try { await ingestFile(currentSessionId, attachedFile); toast.success("Node Indexed."); } catch (err) { toast.error("Ingestion failed."); }
+    }
 
     setInputValue('');
-    setIsThinking(true);
-    setPhase('querying_l1');
-    setCurrentView('flow');
-
-    let currentSessionId = activeSessionId;
-    if (!currentSessionId) {
-      currentSessionId = Date.now().toString();
-      setActiveSessionId(currentSessionId);
-      setHistory(prev => [{
-        id: currentSessionId,
-        title: prompt.slice(0, 30),
-        timestamp: Date.now(),
-        messages: [{ prompt, responsesL1: null, responseL2: null, isProcessing: true }]
-      }, ...prev]);
-    } else {
-      setHistory(prev => prev.map(s => s.id === currentSessionId ? { ...s, messages: [...s.messages, { prompt, responsesL1: null, responseL2: null, isProcessing: true }] } : s));
-    }
-
-    const updateMessage = (payload) => {
-      setHistory(prev => prev.map(s => {
-        if (s.id === currentSessionId) {
-          const newMessages = [...s.messages];
-          newMessages[newMessages.length - 1] = { ...newMessages[newMessages.length - 1], ...payload };
-          return { ...s, messages: newMessages };
-        }
-        return s;
-      }));
-    };
-
+    setAttachedFile(null);
     setPhase('querying_l1');
 
     const controller = new AbortController();
     setAbortController(controller);
 
-    // Context Serialization for Conversational Memory
-    const msgHistory = [];
-    if (activeSession) {
-      activeSession.messages.forEach(m => {
-        if (m.prompt) msgHistory.push({ role: "user", content: m.prompt });
-        if (m.responseL2?.response) msgHistory.push({ role: "assistant", content: m.responseL2.response });
-      });
+    const updateMessage = (updates) => {
+       setHistory(prev => prev.map(s => {
+          if (s.id === currentSessionId || s.session_id === currentSessionId || s._id === currentSessionId) {
+             const lastMsg = s.messages[s.messages.length - 1];
+             if (lastMsg && lastMsg.isProcessing) {
+                const newMessages = [...s.messages];
+                newMessages[newMessages.length - 1] = { ...lastMsg, ...updates, isFileAttached: hasFile };
+                return { ...s, messages: newMessages };
+             } else {
+                return { ...s, messages: [...s.messages, { prompt, responseL1: [], responseL2: '', isProcessing: true, isFileAttached: hasFile, ...updates }] };
+             }
+          }
+          return s;
+       }));
+    };
+
+    const existingSession = history.find(s => (s.id === currentSessionId || s.session_id === currentSessionId || s._id === currentSessionId));
+    if (!existingSession || existingSession.title === "Audit Started") {
+       generateChatTitle(prompt, 'gpt').then(data => {
+          if (data.status === 'success') {
+             setHistory(prev => prev.map(s => (s.id === currentSessionId || s.session_id === currentSessionId || s._id === currentSessionId) ? { ...s, title: data.title } : s));
+          }
+       }).catch(console.error);
     }
 
-    // Parallel Title Generation for New Sessions
-    const existingSession = history.find(s => s.id === currentSessionId);
-    if (!existingSession || existingSession.title === "New Session" || existingSession.title === "New Chat") {
-       generateChatTitle(prompt, pipelineConfig.layer2).then(data => {
-          if (data.status === 'success') {
-             setHistory(prev => prev.map(s => s.id === currentSessionId ? { ...s, title: data.title } : s));
-          }
-       }).catch(e => console.error("Parallel title gen failed", e));
-    }
+    const mappedL1 = modelsL1; // Use clinical IDs for backend lookup
+    const mappedL2 = modelL2;
 
     try {
-      await queryStreamGraph(currentUser.uid, prompt, msgHistory, pipelineConfig.layer1, pipelineConfig.layer2, (event) => {
-        if (event.node === 'error_node') {
-          toast.error(`Deliberation Error: ${event.state.error}`);
-          return;
-        }
-
-        if (event.node === 'layer1_node') { 
-          updateMessage({ responsesL1: event.state.l1_responses }); 
-          setPhase('querying_l2'); 
-        }
+      await queryStreamGraph(currentUser.uid, prompt, existingSession?.messages || [], mappedL1, mappedL2, (event) => {
+        if (event.node === 'retrieval_node') { setPhase('querying_l1'); }
+        else if (event.node === 'layer1_node') { updateMessage({ responsesL1: event.state.l1_responses }); setPhase('querying_l2'); }
         else if (event.node === 'layer2_node') { 
           const isDone = !event.state.needs_reconsideration;
-          updateMessage({ 
-            responseL2: event.state.l2_response,
-            isProcessing: !isDone
-          }); 
-          
+          updateMessage({ responseL2: event.state.l2_response, isProcessing: !isDone }); 
           if (isDone) {
             setPhase('done');
             setCurrentView('transcript');
-            // Trigger save after state updates
             setTimeout(async () => {
               setHistory(prev => {
-                 const current = prev.find(s => s.id === currentSessionId);
-                 if (current) {
-                    saveChat(currentUser.uid, currentSessionId, current.title, current.messages)
-                      .catch(e => console.error("Database sync failed", e));
-                 }
-                 return prev;
+                const current = prev.find(s => (s.id === currentSessionId || s.session_id === currentSessionId || s._id === currentSessionId));
+                if (current) saveChat(currentUser.uid, currentSessionId, current.title, current.messages).catch(console.error);
+                return prev;
               });
             }, 500);
-          } else {
-            setPhase('querying_l1');
-          }
+          } else { setPhase('querying_l1'); }
         }
-      }, controller.signal);
+      }, controller.signal, currentSessionId);
     } catch (error) {
-      if (error.name === 'AbortError') {
-         console.log('Deliberation terminated by user');
-      } else if (error.message.includes("Free limit reached")) {
-         setIsPremiumModalOpen(true);
-      } else {
-         toast.error(error.message);
-      }
+      toast.error(error.message);
       updateMessage({ isProcessing: false });
-    } finally { 
-      setIsThinking(false);
-      setAbortController(null);
-    }
-  }, [inputValue, activeSessionId, currentUser, pipelineConfig, isThinking, isPipelineConfigured]);
+    } finally { setIsThinking(false); setAbortController(null); }
+  }, [inputValue, activeSessionId, currentUser, isThinking, history, modelsL1, modelL2, attachedFile]);
 
   const [deleteModal, setDeleteModal] = useState({ open: false, sessionId: null, title: '' });
-
-  const handleDeleteSession = (e, session) => {
-    e.stopPropagation();
-    setDeleteModal({ open: true, sessionId: session.id, title: session.title });
-  };
-
+  const handleDeleteSession = (e, session) => { e.stopPropagation(); setDeleteModal({ open: true, sessionId: session.id || session.session_id || session._id, title: session.title }); };
   const confirmDelete = async () => {
     try {
       await deleteChat(currentUser.uid, deleteModal.sessionId);
-      setHistory(prev => prev.filter(s => s.id !== deleteModal.sessionId));
-      if (activeSessionId === deleteModal.sessionId) {
-        setActiveSessionId(null);
-        setActiveSession(null);
-        setPhase(null);
-      }
-      toast.success("Session erased from registry");
-    } catch (err) {
-      toast.error("Failed to delete session");
-    }
+      setHistory(prev => prev.filter(s => (s.id !== deleteModal.sessionId && s.session_id !== deleteModal.sessionId && s._id !== deleteModal.sessionId)));
+      if (activeSessionId === deleteModal.sessionId) { setActiveSessionId(null); setPhase(null); }
+      toast.success("Erased.");
+    } catch (err) { toast.error("Delete failed"); }
   };
-
-  const handleSelectSession = (index) => {
-    setActiveSessionId(history[index].id);
-    setCurrentView('flow');
-    setIsSearchOpen(false);
-  };
-
-  const handleNewChat = () => { setActiveSessionId(null); setPhase(null); setCurrentView('flow'); };
-
+  const handleSelectSession = (index) => { setActiveSessionId(history[index]._id || history[index].session_id || history[index].id); setCurrentView('flow'); setIsSearchOpen(false); navigate('/'); };
+  const handleNewChat = () => { setActiveSessionId(null); setPhase(null); setCurrentView('flow'); navigate('/'); };
   const handleShare = () => {
-    if (!activeSessionId) return toast.error("No active session");
+    if (!activeSessionId) return toast.error("No session");
     navigator.clipboard.writeText(`${window.location.origin}/share/${activeSessionId}`);
     toast.success("Link copied!");
   };
 
   const [abortController, setAbortController] = useState(null);
+  const handleStop = () => { if (abortController) { abortController.abort(); setAbortController(null); setIsThinking(false); } };
 
-  const handleStop = () => {
-    if (abortController) {
-      abortController.abort();
-      setAbortController(null);
-      setIsThinking(false);
-      // Clean up local processing state
-      if (activeSession) {
-         const newMessages = [...activeSession.messages];
-         const lastMsg = newMessages[newMessages.length - 1];
-         if (lastMsg && lastMsg.isProcessing) {
-            lastMsg.isProcessing = false;
-            setActiveSession({...activeSession, messages: newMessages});
-         }
-      }
-    }
-  };
+  const fileInputRef = useRef(null);
+  const handleFileUpload = async (e) => { const file = e.target.files[0]; if (!file) return; setAttachedFile(file); toast.success(`${file.name} attached.`); };
+
+  const availableModels = ['GPT', 'Grok', 'DeepSeek'];
 
   const inputComponent = (
-    <div className="w-full">
-      <div className={`rounded-3xl overflow-hidden glass transition-all ${activeSession ? 'bg-[#0d0e15] border border-white/5' : 'bg-[#0d0e15] border-white/10 shadow-2xl'}`}>
+    <div className="w-full relative">
+      {/* BOX UI */}
+      <div className={`rounded-[32px] overflow-hidden transition-all border border-white/[0.08] backdrop-blur-3xl bg-white/[0.03] ${!activeSession ? 'shadow-2xl shadow-black/80' : 'shadow-xl'}`}>
         <textarea
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); !isThinking ? handleSend() : null; } }}
-          placeholder="Enter controversial topic..."
-          className="w-full px-6 pt-5 pb-2 bg-transparent text-white text-sm outline-none resize-none"
+          onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+          placeholder="Ask anything..."
+          className="w-full px-10 pt-10 pb-4 bg-transparent text-white text-base outline-none resize-none min-h-[120px] font-medium leading-relaxed placeholder:text-white/20"
         />
-        <div className="flex items-center justify-between px-4 pb-4">
-          <button onClick={() => setIsConfigOpen(true)} className="px-4 py-2 rounded-xl text-[11px] font-bold text-white/40 border border-white/5 bg-[#1a1b26] hover:text-white transition-colors">Select Source</button>
-          
-          {isThinking ? (
-            <button onClick={handleStop} className="h-10 px-6 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full text-xs font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all flex items-center gap-2">
-              <div className="w-2 h-2 bg-current rounded-sm" />
-              Stop
-            </button>
-          ) : (
-            <button onClick={() => handleSend()} disabled={!inputValue.trim()} className="h-10 px-6 bg-white text-black rounded-full text-xs font-black uppercase tracking-widest hover:bg-neutral-200 transition-all disabled:opacity-30">Send</button>
-          )}
+        <div className="flex items-center justify-between px-10 pb-8">
+          <div className="flex gap-4 items-center">
+             <button onClick={() => fileInputRef.current?.click()} className="p-4 rounded-full bg-white/5 border border-white/10 text-white/20 hover:text-white hover:bg-[#ea3a5b]/20 hover:border-[#ea3a5b]/40 transition-all"><Plus size={20} /></button>
+             <button onClick={startSTT} className={`p-4 rounded-full transition-all border ${isListening ? 'bg-rose-500/20 border-rose-500 text-rose-500 animate-pulse' : 'bg-white/5 border-white/10 text-white/20 hover:text-white'}`}><Mic size={20} /></button>
+             <button onClick={() => setIsConfigOpen(!isConfigOpen)} className={`px-6 py-3 rounded-2xl border transition-all flex items-center gap-3 group ${isConfigOpen ? 'bg-[#ea3a5b]/20 border-[#ea3a5b] text-[#ea3a5b]' : 'bg-white/5 border-white/10 text-white/20 hover:text-white'}`}>
+                <Cpu size={18} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Model Settings</span>
+             </button>
+          </div>
+          <div className="flex items-center gap-4">
+            {isThinking ? (
+              <button onClick={handleStop} className="h-14 px-10 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-xl shadow-rose-500/10">Stop Analysis</button>
+            ) : (
+              <button onClick={() => handleSend()} disabled={!inputValue.trim() && !attachedFile} className="h-14 px-12 bg-white text-black rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#ea3a5b] hover:text-white transition-all disabled:opacity-20 shadow-2xl shadow-black/40 flex items-center gap-3 group">
+                 Send <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
   );
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setHistory([]);
-    setActiveSessionId(null);
-    setActiveSession(null);
-    localStorage.removeItem('parliament_user');
-    navigate('/login');
-  };
-
   return (
     <>
-      <Toaster position="bottom-right" toastOptions={{ style: { background: '#0d0d12', color: '#fff', border: '1px solid rgba(255,255,255,0.05)' } }} />
-      {isPremiumModalOpen && <PremiumModal isOpen={isPremiumModalOpen} onClose={() => setIsPremiumModalOpen(false)} />}
-      <DeleteConfirmModal 
-        isOpen={deleteModal.open} 
-        onClose={() => setDeleteModal({ ...deleteModal, open: false })} 
-        onConfirm={confirmDelete}
-        title={deleteModal.title}
-      />
+      <Toaster position="bottom-right" />
+      <DeleteConfirmModal isOpen={deleteModal.open} onClose={() => setDeleteModal({ ...deleteModal, open: false })} onConfirm={confirmDelete} title={deleteModal.title} />
       
       {isSearchOpen && (
         <div className="fixed inset-0 z-[200] flex items-start justify-center pt-[15vh]">
            <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => setIsSearchOpen(false)} />
-           <div className="w-full max-w-2xl bg-[#1c1c1e]/80 backdrop-blur-3xl border border-white/20 rounded-[28px] shadow-2xl overflow-hidden">
-              <div className="p-6 border-b border-white/10">
-                 <input autoFocus placeholder="Search chats..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl text-white placeholder-white/20" />
-              </div>
-              <div className="max-h-[50vh] overflow-y-auto">
-                 {filteredHistory.map((s, idx) => (
-                    <button key={s.id} onClick={() => { handleSelectSession(history.indexOf(s)); setIsSearchOpen(false); }} className="w-full px-6 py-4 hover:bg-white/5 text-left border-b border-white/5">
-                       <div className="font-bold">{s.title}</div>
-                       <div className="text-[10px] opacity-30 uppercase tracking-widest">{new Date(s.timestamp).toLocaleDateString()}</div>
+           <div className="w-full max-w-2xl bg-[#0d0d12]/90 backdrop-blur-3xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-2 animate-in fade-in slide-in-from-top-4">
+              <div className="p-8"><input autoFocus placeholder="Search history..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-transparent border-none outline-none text-3xl text-white placeholder-white/10 font-medium" /></div>
+              <div className="max-h-[50vh] overflow-y-auto custom-scrollbar">
+                 {filteredHistory.map((s) => (
+                    <button key={s.id || s.session_id || s._id} onClick={() => { handleSelectSession(history.indexOf(s)); setIsSearchOpen(false); }} className="w-full px-8 py-6 hover:bg-white/5 text-left border-b border-white/5 flex items-center justify-between group">
+                       <div><div className="font-bold text-white group-hover:text-[#ea3a5b] transition-colors">{s.title}</div><div className="text-[10px] opacity-20 uppercase tracking-[0.3em] mt-2 font-black italic">{new Date(s.updated_at || s.timestamp).toLocaleDateString()}</div></div>
+                       <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                     </button>
                  ))}
               </div>
@@ -324,223 +429,150 @@ function MainApp() {
       )}
 
       <Routes>
-        <Route path="/" element={<LandingPage onLoginClick={() => navigate('/login')} />} />
-        <Route path="/login" element={currentUser ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} />
+        <Route path="/login" element={currentUser ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} />
         <Route path="/share/:sessionId" element={<SharedChat />} />
-        <Route path="/onboarding" element={<Onboarding onComplete={() => navigate('/dashboard')} user={currentUser} />} />
-        <Route path="/account" element={currentUser ? <AccountPage user={currentUser} onLogout={handleLogout} onUpdate={(u) => {setCurrentUser(u); localStorage.setItem('parliament_user', JSON.stringify(u));}} /> : <Navigate to="/login" />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/dashboard" element={
-          !currentUser ? <Navigate to="/login" /> : (
-            <div className="h-screen w-full flex bg-[#09090b] text-white overflow-hidden relative">
-               {/* Mobile Sidebar Overlay */}
-               {sidebarOpen && (
-                 <div 
-                   className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] lg:hidden" 
-                   onClick={() => setSidebarOpen(false)}
-                 />
-               )}
-
-               <div className={`
-                 transition-all duration-300 border-r border-white/5 bg-[#0d0d12] flex flex-col flex-shrink-0 z-[120]
-                 ${sidebarOpen ? 'w-[280px] opacity-100' : 'w-0 opacity-0 overflow-hidden'}
-                 ${sidebarOpen ? 'fixed inset-y-0 left-0 lg:relative' : ''}
-               `}>
-                  <div className="w-[280px] h-full flex flex-col p-4">
-                     <div className="flex items-center justify-between mb-6 px-2">
-                        <div className="flex items-center gap-2">
-                           <img src="/logo.png" alt="" className="w-6 h-6 object-contain" />
-                           <span className="font-black text-sm uppercase tracking-widest opacity-50 text-white">Council <span className="text-[#ea3a5b]">X</span></span>
-                        </div>
-                        <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-white/5 rounded-lg"><svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
-                     </div>
-                     <button onClick={handleNewChat} className="w-full h-11 bg-[#1a1b26] border border-white/5 rounded-full text-sm font-bold mb-8">New Chat</button>
-                     <div className="flex-1 overflow-y-auto"><ChatHistory history={history} onSelectSession={handleSelectSession} onDeleteSession={(e, id) => handleDeleteSession(e, history.find(s => s.id === id))} activeIndex={history.findIndex(s => s.id === activeSessionId)} /></div>
-                     <div className="mt-auto pt-4 flex flex-col gap-3">
-                        <button onClick={() => setIsPremiumModalOpen(true)} className="w-full py-4 bg-white/[0.03] border border-white/10 rounded-[20px] text-[10px] font-black uppercase tracking-[0.3em] text-white/40 hover:bg-white/5 hover:text-white transition-all">Upgrade to Pro</button>
-                        <div className="flex items-center gap-3 px-3 py-3 bg-white/5 rounded-xl cursor-pointer" onClick={() => navigate('/account')}>
-                           <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold overflow-hidden">{currentUser.photoURL ? <img src={currentUser.photoURL} alt="" /> : 'U'}</div>
-                           <div className="min-w-0"><div className="text-xs font-bold truncate">{currentUser.displayName}</div><div className="text-[9px] opacity-40 truncate">{currentUser.email}</div></div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               
-                <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
-          <header className="flex items-center justify-between px-4 md:px-8 py-4 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.02] z-[100] sticky top-0">
-             <div className="flex items-center gap-3 md:gap-6">
-                <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg lg:hidden">
-                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                      <line x1="3" y1="12" x2="21" y2="12"></line>
-                      <line x1="3" y1="6" x2="21" y2="6"></line>
-                      <line x1="3" y1="18" x2="21" y2="18"></line>
-                   </svg>
-                </button>
-               {activeSession && (
-                 <>
-                   <div className="flex items-center bg-white/5 rounded-full p-1 border border-white/5 overflow-hidden">
-                      <button onClick={() => setCurrentView('flow')} className={`px-3 md:px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Logic</button>
-                      <button onClick={() => setCurrentView('transcript')} className={`px-3 md:px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Transcript</button>
-                   </div>
-                   <div className="h-4 w-[1px] bg-white/10" />
-                   <div className="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 truncate max-w-[300px]">{activeSession.title}</div>
-                 </>
-               )}
-            </div>
-            
-            <div className="flex items-center gap-4">
-               <button onClick={handleShare} className="text-[11px] font-bold text-white/60 flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/5">Share <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg></button>
-               <div className="w-8 h-8 rounded-full border border-white/10 overflow-hidden ml-2 shadow-lg cursor-pointer" onClick={() => navigate('/account')}>
-                  {currentUser.photoURL ? <img src={currentUser.photoURL} className="w-full h-full object-cover" alt="" /> : <div className="w-full h-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold">U</div>}
-               </div>
-            </div>
-         </header>
-         <div className="flex-1 flex flex-col min-h-0 relative">
-            {!activeSession ? (
-               <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center px-8 py-20 text-center max-w-6xl mx-auto custom-scrollbar">
-                  <h1 className="text-6xl font-black mb-4 tracking-tighter bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent">
-                     {(() => {
-                        const hour = new Date().getHours();
-                        if (hour < 12) return "Good morning";
-                        if (hour < 18) return "Good afternoon";
-                        return "Good evening";
-                     })()}, {currentUser.displayName?.split(' ')[0]}
-                  </h1>
-                  <p className="text-white/40 mb-16 text-xl font-medium max-w-2xl leading-relaxed">
-                     The Assembly is ready. Challenge the consensus, dissect the controversial, and find the truth.
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-12">
-                     {[
-                       { t: "Economics", p: "Universal Basic Income: Economic miracle or structural collapse?" },
-                       { t: "Energy", p: "Nuclear Energy: The only path to net-zero?" },
-                       { t: "Ethics", p: "Social Media Algorithms: Free speech vs. systemic harm." }
-                     ].map(card => <button key={card.p} onClick={() => setInputValue(card.p)} className="bg-[#0b0c14] p-10 rounded-[40px] border border-white/5 text-left transition-all hover:bg-[#12131f] hover:scale-[1.02] shadow-2xl group">
-                        <p className="text-[10px] font-black opacity-20 group-hover:opacity-40 uppercase tracking-[0.4em] mb-8 transition-all">{card.t}</p>
-                        <p className="text-base font-bold leading-relaxed">{card.p.split(':')[0]}</p>
-                     </button>)}
-                  </div>
-               </div>
-            ) : (
-               <div ref={scrollRef} className="flex-1 overflow-y-auto pt-10 px-6 pb-64 custom-scrollbar overscroll-none">
-                  <div className="w-full space-y-24">
-                     {activeSession.messages.map((msg, idx) => (
-                        <div key={idx} className="w-full space-y-12">
-                           {currentView === 'flow' && (
-                             <div className="flex items-center gap-5 opacity-40">
-                                <div className="text-[10px] font-black uppercase tracking-[0.3em] px-5 py-2 bg-white/5 rounded-full border border-white/5 shadow-xl">Assembly Logic Task 0{idx+1}</div>
-                                <div className="h-[1px] flex-1 bg-white/5" />
-                             </div>
-                           )}
-                           
-                           {currentView === 'flow' ? (
-                              <div className="space-y-20">
-                                 <div className="space-y-8 bg-black/20 rounded-[48px] p-4 border border-white/[0.02]">
-                                    <FlowCanvas 
-                                       prompt={msg.prompt} 
-                                       responsesL1={msg.responsesL1} 
-                                       responseL2={msg.responseL2} 
-                                       responseL3={msg.responseL3} 
-                                       responseL4={msg.responseL4} 
-                                       isThinking={msg.isProcessing} 
-                                       phase={idx === activeSession.messages.length - 1 ? phase : 'done'} 
-                                       config={pipelineConfig} 
-                                    />
-                                 </div>
-                              </div>
-                           ) : (
-                              <div className="space-y-10 py-6 w-full">
-                                 {/* User Message */}
-                                 <div className="flex justify-end items-start gap-4">
-                                    <div className="flex flex-col items-end gap-2 max-w-[85%]">
-                                       <div className="bg-[#0f172a] border border-white/10 rounded-[32px] rounded-tr-sm px-8 py-5 text-base font-bold text-white shadow-xl leading-relaxed">{msg.prompt}</div>
-                                       <span className="text-[9px] font-black uppercase tracking-widest text-white/10 mr-4">Investigator</span>
+        <Route path="/whitepaper" element={<Whitepaper />} />
+        <Route path="/*" element={
+          !currentUser ? <LandingPage onLoginClick={() => navigate('/login')} /> : (
+            <DashboardShell 
+              currentUser={currentUser} sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} 
+              handleNewChat={handleNewChat} history={history} handleSelectSession={handleSelectSession} 
+              handleDeleteSession={handleDeleteSession} activeSessionId={activeSessionId} setIsSearchOpen={setIsSearchOpen} 
+              navigate={navigate} handleLogout={handleLogout} activeSession={activeSession} currentView={currentView} 
+              setCurrentView={setCurrentView} handleShare={handleShare}
+            >
+               <Routes>
+                  <Route path="/" element={
+                    <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
+                       <div className="flex-1 overflow-y-auto p-4 md:p-12 mb-4" ref={scrollRef}>
+                          <div className="w-full space-y-16 py-10">
+                             {!activeSession && (
+                               <div className="h-[60vh] flex items-center justify-center text-center">
+                                  <div className="relative z-10 w-full px-12">
+                                     <h2 className="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40">
+                                        {new Date().getHours() < 12 ? 'Good Morning,' : new Date().getHours() < 18 ? 'Good Afternoon,' : 'Good Evening,'} <span className="text-[#ea3a5b]">{(currentUser?.displayName || currentUser?.display_name || currentUser?.email?.split('@')?.[0] || 'there')?.split(' ')?.[0]}</span>.
+                                     </h2>
+                                     <p className="text-white/20 text-sm font-black uppercase tracking-[0.4em] mt-6">
+                                        {randomTagline}
+                                     </p>
+                                  </div>
+                               </div>
+                             )}
+                             {activeSession && currentView === 'flow' && (
+                                <div className="flex-1 flex flex-col items-center">
+                              {/* HUD OVERLAY - Elevated 'Out of Box' */}
+                              {(() => {
+                                 const msgs = activeSession?.messages || [];
+                                 const lastMsg = msgs[msgs.length - 1];
+                                 const processedPrompt = lastMsg?.prompt || inputValue;
+                                 if (!processedPrompt) return null;
+                                 return (
+                                    <div 
+                                       className="w-full max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-top-4 duration-700 cursor-pointer"
+                                       onClick={() => setIsInputExpanded(!isInputExpanded)}
+                                    >
+                                       <div className="bg-[#12121a]/60 backdrop-blur-3xl border border-white/5 rounded-[32px] p-6 flex items-start gap-6 shadow-2xl transition-all hover:border-[#ea3a5b]/20">
+                                          <div className="w-12 h-12 rounded-2xl bg-[#ea3a5b]/10 flex items-center justify-center text-[#ea3a5b] flex-shrink-0 border border-[#ea3a5b]/20 shadow-lg shadow-[#ea3a5b]/5 mt-1">
+                                             <MessageSquare size={20} />
+                                          </div>
+                                          <div className="min-w-0 flex-1">
+                                             <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-1.5 opacity-80 italic">Input</div>
+                                             <div className={`text-sm font-semibold text-white/90 leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate'}`}>"{processedPrompt}"</div>
+                                          </div>
+                                       </div>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full border border-white/10 bg-indigo-600 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-2xl">
-                                       {currentUser.photoURL ? <img src={currentUser.photoURL} alt="" className="w-full h-full object-cover" /> : <span className="text-xs font-bold">U</span>}
-                                    </div>
+                                 );
+                              })()}
+
+                                 <div className="w-full max-w-7xl h-[60vh] rounded-[40px] overflow-hidden bg-[#0a0a0b] border border-white/5 relative shadow-inner group">
+                                    <div className="absolute -inset-4 bg-gradient-to-r from-[#ea3a5b]/5 to-blue-500/5 rounded-[60px] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                                    {(() => {
+                                       const msgs = activeSession?.messages || [];
+                                       const lastMsg = msgs[msgs.length - 1] || {};
+                                       return (
+                                          <FlowCanvas 
+                                             activeSessionId={activeSessionId}
+                                             responsesL1={lastMsg.responsesL1 || []}
+                                             responseL2={lastMsg.responseL2 || ''}
+                                             isThinking={isThinking}
+                                             phase={phase}
+                                             isFileAttached={lastMsg.isFileAttached || attachedFile !== null}
+                                             currentPrompt={lastMsg.prompt || inputValue}
+                                             config={{
+                                                layer1: modelsL1,
+                                                layer2: modelL2
+                                             }} 
+                                          />
+                                       );
+                                    })()}
                                  </div>
-
-                                 {/* AI Arbiter Response */}
-                                 {msg.responseL2 && (
-                                   <div className="flex justify-start items-start gap-4 w-full">
-                                      <div className="w-10 h-10 rounded-full border border-white/10 bg-[#121214] flex-shrink-0 flex items-center justify-center shadow-2xl relative">
-                                         <div className="absolute inset-0 bg-blue-500/5 blur-xl rounded-full" />
-                                         <span className="text-lg relative z-10">⚖️</span>
-                                      </div>
-                                      <div className="flex flex-col items-start gap-3 flex-1 max-w-[90%]">
-                                         <div className="bg-[#121214] border border-white/10 rounded-[40px] rounded-tl-sm px-10 py-8 prose prose-invert prose-p:leading-relaxed max-w-none w-full prose-lg shadow-2xl relative overflow-hidden">
-                                            <ReactMarkdown>{msg.responseL2.response}</ReactMarkdown>
-                                         </div>
-                                         <div className="flex items-center gap-6 pl-4 h-10">
-                                            {!msg.feedback ? (
-                                              <div className="flex items-center gap-3 opacity-20 hover:opacity-100 transition-opacity">
-                                                 <button 
-                                                   onClick={() => {
-                                                     const newMessages = [...activeSession.messages];
-                                                     newMessages[idx].feedback = 'like';
-                                                     setActiveSession({...activeSession, messages: newMessages});
-                                                     import('./api/council').then(m => m.saveFeedback(currentUser.uid, activeSessionId, idx, 'like'));
-                                                   }} 
-                                                   className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                                                 >
-                                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
-                                                 </button>
-                                                 <button 
-                                                   onClick={() => {
-                                                     const newMessages = [...activeSession.messages];
-                                                     newMessages[idx].feedback = 'dislike';
-                                                     setActiveSession({...activeSession, messages: newMessages});
-                                                     import('./api/council').then(m => m.saveFeedback(currentUser.uid, activeSessionId, idx, 'dislike'));
-                                                   }}
-                                                   className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                                                 >
-                                                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2H20a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
-                                                 </button>
-                                              </div>
-                                            ) : (
-                                              <div className="flex items-center gap-2 px-3 py-1 bg-white/[0.03] rounded-full border border-white/5 animate-in fade-in zoom-in-95 duration-500">
-                                                 <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white/30">Feedback Recorded</span>
-                                                 {msg.feedback === 'like' ? 
-                                                   <svg className="text-emerald-500/60" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg> : 
-                                                   <svg className="text-rose-500/60" width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2H20a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
-                                                 }
-                                              </div>
-                                            )}
-                                            <span className="text-[9px] font-black uppercase tracking-widest text-white/10">Final Arbiter</span>
-                                         </div>
-                                      </div>
-                                   </div>
-                                 )}
-
-                                 {msg.isProcessing && (
-                                   <div className="flex justify-start items-center gap-4 pl-14">
-                                      <div className="bg-white/5 rounded-full px-6 py-3 flex gap-2 items-center shadow-xl border border-white/5 backdrop-blur-md">
-                                         <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" />
-                                         <div className="w-1.5 h-1.5 bg-blue-500/60 rounded-full animate-bounce [animation-delay:0.2s]" />
-                                         <div className="w-1.5 h-1.5 bg-blue-500/30 rounded-full animate-bounce [animation-delay:0.4s]" />
-                                         <span className="ml-2 text-[9px] font-black uppercase tracking-widest text-white/20">Deliberating...</span>
-                                      </div>
-                                   </div>
-                                 )}
-                              </div>
-                           )}
-                        </div>
-                     ))}
-                  </div>
-               </div>
-            )}
-            <div className="absolute bottom-10 left-0 w-full px-10 pointer-events-none z-50">
-               <div className="w-full max-w-5xl mx-auto pointer-events-auto shadow-[0_50px_100px_rgba(0,0,0,0.8)] rounded-full">
-                  {inputComponent}
-               </div>
-            </div>
-         </div>
-         <FlowConfigModal isOpen={isConfigOpen} onClose={() => setIsConfigOpen(false)} config={pipelineConfig} onSave={setPipelineConfig} />
-      </div>
-   </div>
-)
+                               </div>
+                             )}
+                             {activeSession && currentView === 'transcript' && (
+                               <div className="w-full px-8 space-y-16">
+                                  {activeSession.messages.map((msg, mIdx) => (
+                                    <div key={mIdx} className="space-y-10 animate-in fade-in duration-700">
+                                       <div className="flex justify-end w-full"><div className="bg-white/5 px-10 py-6 rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white/90 max-w-[70%] border border-white/[0.05] shadow-2xl">{msg.prompt}</div></div>
+                                       {msg.responseL2 && (
+                                          <div className="flex gap-10 group w-full">
+                                             <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center relative p-2 overflow-hidden">
+                                                <img src="/logo.png" className="w-full h-full object-contain" alt="CouncilX" />
+                                             </div>
+                                             <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-10 rounded-[32px] rounded-tl-none prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 max-w-[85%] shadow-sm overflow-x-auto min-h-[100px]">
+                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                   {typeof msg.responseL2 === 'string' ? msg.responseL2 : msg.responseL2?.response || ''}
+                                                </ReactMarkdown>
+                                             </div>
+                                          </div>
+                                       )}
+                                    </div>
+                                  ))}
+                               </div>
+                             )}
+                          </div>
+                       </div>
+                       
+                       <div className="p-12 pt-0 w-full max-w-none">
+                          <div className="w-full px-4">
+                             {/* ATTACHED FILE PREVIEW ABOVE THE BOX */}
+                             {attachedFile && (
+                               <div className="mb-4 animate-in slide-in-from-bottom-2 duration-300">
+                                  <div className="bg-[#161720]/80 backdrop-blur-3xl border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl inline-flex">
+                                     <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg"><FileText size={18} /></div>
+                                     <div className="min-w-0 pr-4">
+                                        <div className="text-sm font-bold truncate text-white">{attachedFile.name}</div>
+                                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Read & Index</div>
+                                     </div>
+                                     <button onClick={() => setAttachedFile(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={14} /></button>
+                                  </div>
+                               </div>
+                             )}
+                             {inputComponent}
+                          </div>
+                       </div>
+                    </div>
+                  } />
+                  <Route path="/audit/scanner" element={<DataScanner />} />
+                  <Route path="/audit/tuner" element={<BiasTuner />} />
+                  <Route path="/audit/tracker" element={<FairnessTracker history={history} activeSessionId={activeSessionId} />} />
+                  <Route path="/audit/report" element={<TrustReport />} />
+                  <Route path="/audit/news" element={<NewsProtocol />} />
+                  <Route path="/account" element={<AccountPage user={currentUser} onLogout={handleLogout} onUpdate={(u) => {setCurrentUser(u); localStorage.setItem('parliament_user', JSON.stringify(u));}} />} />
+               </Routes>
+            </DashboardShell>
+          )
         } />
       </Routes>
+      <FlowConfigModal 
+         isOpen={isConfigOpen} 
+         onClose={() => setIsConfigOpen(false)} 
+         config={{ layer1: modelsL1, layer2: modelL2 }} 
+         onSave={(newConfig) => {
+            setModelsL1(newConfig.layer1);
+            setModelL2(newConfig.layer2);
+         }} 
+      />
+      <input type="file" ref={fileInputRef} onChange={handleFileUpload} className="hidden" accept=".csv,.json,.pdf,.txt" />
     </>
   );
 }

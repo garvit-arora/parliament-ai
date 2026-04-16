@@ -33,10 +33,9 @@ export default function Login({ onLogin }) {
       <nav className="fixed top-0 w-full z-50 bg-[#09090b]/60 backdrop-blur-xl border-b border-white/5">
         <div className="w-full px-6 md:px-12 h-24 flex items-center justify-between">
           <div className="flex items-center gap-4 cursor-pointer" onClick={() => window.location.href = '/'}>
-            <img src="/logo.png" alt="Council X" className="w-10 h-10 md:w-12 md:h-12 object-contain" />
-            <span className="font-black text-xl md:text-2xl tracking-tighter uppercase whitespace-nowrap">
-               <span className="text-white">Council</span>
-               <span className="text-[#ea3a5b] ml-1">X</span>
+            <img src="/logo.png" alt="CouncilX" className="w-10 h-10 object-contain" />
+            <span className="font-black text-xl md:text-2xl tracking-tighter uppercase text-white">
+               Council<span className="text-[#ea3a5b]">X</span>
             </span>
           </div>
           
@@ -48,26 +47,31 @@ export default function Login({ onLogin }) {
       <div className="max-w-md w-full glass p-10 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
         
         <div className="text-center">
-          <h2 className="text-3xl font-black tracking-tight mb-2 uppercase"><span className="text-white">Council</span> <span className="text-[#ea3a5b]">X</span></h2>
+          <h2 className="text-3xl font-black tracking-tight mb-2 uppercase text-white">Council<span className="text-[#ea3a5b]">X</span></h2>
           <p className="text-white/50 text-sm mb-10 font-medium">Protocol Authenticated Session</p>
         </div>
 
         <div className="space-y-4">
           {error && <div className="text-red-400 text-sm text-center bg-red-400/10 p-3 rounded-lg">{error}</div>}
 
-          <div className="flex items-center gap-2 mb-2 text-left">
-            <input 
-              type="checkbox" 
-              id="data-consent" 
-              className="w-4 h-4 cursor-pointer"
-              onChange={(e) => {
-                if (e.target.checked) setError(null);
-              }}
-            />
-            <label htmlFor="data-consent" className="text-xs text-white/60 cursor-pointer">
-              I accept that my data will be stored and used to train models for reward learning.
-            </label>
-          </div>
+          <label className="flex items-start gap-3 mb-6 cursor-pointer group">
+            <div className="relative flex items-center">
+              <input 
+                type="checkbox" 
+                id="data-consent" 
+                className="peer appearance-none w-5 h-5 border border-white/10 rounded-md bg-white/5 checked:bg-[#ea3a5b] checked:border-[#ea3a5b] transition-all cursor-pointer"
+                onChange={(e) => {
+                  if (e.target.checked) setError(null);
+                }}
+              />
+              <svg className="absolute w-5 h-5 text-white p-1 pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" strokeWidth="4" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <span className="text-[11px] text-white/50 leading-relaxed group-hover:text-white/80 transition-colors">
+              I certify that I am human and agree to the <span className="text-white">Protocol Consensus Agreement</span> for data orchestration and vector storage.
+            </span>
+          </label>
 
           <button
             onClick={() => {

@@ -1,17 +1,41 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { getModelById } from '../data/models';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { 
+  Plus, 
+  Trash2, 
+  Play, 
+  Database, 
+  Cpu, 
+  Terminal, 
+  CheckCircle, 
+  AlertCircle, 
+  Info, 
+  Clock, 
+  ArrowRight,
+  Maximize2,
+  FileText, 
+  Zap, 
+  Search, 
+  MessageSquare, 
+  X, 
+  CheckCircle2 
+} from 'lucide-react';
 
 /**
- * 4-Layer Node-based Flow Canvas with Draggable Nodes
+ * RESTORED Flow Canvas UI: Initial Curved-Line Aesthetic
+ * Merged with Forensic RAG & HUD Features
  */
 export default function FlowCanvas({
-  prompt,
-  responsesL1,
-  responseL2,
-  isThinking,
-  phase, 
-  config
+  activeSessionId,
+  responsesL1 = [],
+  responseL2 = '',
+  isThinking = false,
+  phase = null,
+  isFileAttached = false,
+  currentPrompt = '',
+  config = { layer1: ['gpt', 'grok', 'deepseek'], layer2: 'gpt' }
 }) {
   const containerRef = useRef(null);
   const [containerSize, setContainerSize] = useState({ w: 1200, h: 400 });
@@ -31,27 +55,38 @@ export default function FlowCanvas({
     return () => observer.disconnect();
   }, []);
 
-  // Initialize positions once or when config changes
+  // Initialize positions
   useEffect(() => {
-    const w = Math.max(containerSize.w, 1300);
-    const h = 400;
-    const col0 = w * 0.15;
-    const col1 = w * 0.45;
-    const col2 = w * 0.75;
+    // Make initialization fully responsive to the current container size, defaulting to 1000px if unmeasured
+    const w = containerSize.w > 0 ? containerSize.w : 1000;
+    const h = containerSize.h > 100 ? containerSize.h : 500; 
+    const col0 = w * 0.10;
+    const colR = w * 0.32;
+    const col1 = w * 0.58;
+    const col2 = w * 0.88;
 
     const initial = {};
     initial['input'] = { x: col0, y: h / 2 };
+    initial['retrieval'] = { x: colR, y: h / 2 };
     
     const l1Models = config?.layer1 || ['gpt', 'grok', 'deepseek'];
-    const l1StartY = (h / 2) - ((l1Models.length - 1) * 140) / 2;
+    const spacing = Math.min(150, (h - 140) / Math.max(1, l1Models.length - 1));
+    const l1StartY = Math.max(80, (h / 2) - ((l1Models.length - 1) * spacing) / 2);
+    
     l1Models.forEach((id, i) => {
-      initial[`l1-${id}`] = { x: col1, y: l1StartY + i * 140 };
+      initial[`l1-${id}`] = { x: col1, y: l1StartY + i * spacing };
     });
 
     initial['l2'] = { x: col2, y: h / 2 };
 
-    setNodePositions(initial);
-  }, [config, containerSize.w]);
+    setNodePositions(prev => {
+      // Break the loop if the coordinates are already synchronized
+      const hasChanged = Object.keys(initial).some(k => 
+        !prev[k] || Math.abs(prev[k].x - initial[k].x) > 1 || Math.abs(prev[k].y - initial[k].y) > 1
+      );
+      return hasChanged ? initial : prev;
+    });
+  }, [config, Math.round(containerSize.w / 20)]); // Bucket width changes to prevent jitters
 
   const handleMouseDown = (id, e) => {
     e.stopPropagation();
@@ -67,8 +102,12 @@ export default function FlowCanvas({
   const handleMouseMove = useCallback((e) => {
     if (!draggingNode) return;
     const rect = containerRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left) - dragOffset.current.x;
-    const y = (e.clientY - rect.top) - dragOffset.current.y;
+    let x = (e.clientX - rect.left) - dragOffset.current.x;
+    let y = (e.clientY - rect.top) - dragOffset.current.y;
+    
+    // Clamp to canvas boundaries to prevent nodes going out of box
+    x = Math.max(110, Math.min(x, rect.width - 110)); // Accommodate 220px width
+    y = Math.max(60, Math.min(y, rect.height - 60));
     
     setNodePositions(prev => ({
       ...prev,
@@ -80,13 +119,22 @@ export default function FlowCanvas({
     setDraggingNode(null);
   };
 
-  const getL1Response = (modelId) => responsesL1?.find((r) => r.model_id === modelId);
+  const getL1Response = (modelId) => responsesL1?.find((r) => r.model_id === modelId || r.model === modelId);
 
-  const getStatus = (nodeTier) => {
+  const getStatus = (nodeTier, modelId = null) => {
     if (!isThinking && phase !== 'done') return 'idle';
     if (nodeTier === 'input') return 'done';
-    if (nodeTier === 'l1') return phase === 'querying_l1' ? 'thinking' : (responsesL1 ? 'done' : 'waiting');
-    if (nodeTier === 'l2') return phase === 'querying_l2' ? 'thinking' : (phase === 'done' ? 'done' : 'waiting');
+    if (nodeTier === 'retrieval') return phase === 'reading_file' ? 'thinking' : (phase !== null && phase !== 'reading_file' ? 'done' : 'waiting');
+    
+    if (nodeTier === 'l1') {
+       if (phase === 'querying_l1') return 'thinking';
+       return (responsesL1 && responsesL1.length > 0) ? 'done' : 'waiting';
+    }
+    
+    if (nodeTier === 'l2') {
+       if (phase === 'querying_l2') return 'thinking';
+       return (phase === 'done' || responseL2) ? 'done' : 'waiting';
+    }
     return 'idle';
   };
 
@@ -96,66 +144,92 @@ export default function FlowCanvas({
     model: getModelById(id)
   }));
 
+  const l2Model = getModelById(config?.layer2 || 'gpt');
+
   return (
     <div
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      className="relative w-full h-[500px] overflow-hidden bg-[#1a1b26]/30 rounded-[40px] border border-white/5 cursor-crosshair"
+      className="relative w-full h-full overflow-hidden bg-[#1a1b26]/30 rounded-[40px] border border-white/5 cursor-crosshair"
       style={{
         backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px)',
-        backgroundSize: '24px 24px'
+        backgroundSize: '32px 32px'
       }}
     >
+      {/* HUD extracted to App.jsx for 'out of box' alignment */}
+
+
       {selectedNode && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-10 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSelectedNode(null)}>
-           <div className="bg-[#1c1c1e] border border-white/10 rounded-[32px] w-full max-w-4xl max-h-[80vh] overflow-hidden flex flex-col shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-10 bg-black/60 backdrop-blur-sm animate-in fade-in" onClick={() => setSelectedNode(null)}>
+           <div className="bg-[#0f1115] border border-white/10 rounded-[32px] w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl scale-in" onClick={e => e.stopPropagation()}>
               <div className="p-8 border-b border-white/5 flex items-center justify-between">
-                 <div className="flex items-center gap-4">
-                     <div className="w-12 h-12 rounded-xl bg-white/5 p-2 flex items-center justify-center border border-white/10">
+                 <div className="flex items-center gap-6">
+                     <div className="w-12 h-12 rounded-xl bg-white p-2 flex items-center justify-center border border-white/10 shadow-xl overflow-hidden">
                         <img src={selectedNode.icon} className="w-full h-full object-contain" alt="" />
                      </div>
                     <div>
-                       <h2 className="text-xl font-black">{selectedNode.modelName}</h2>
-                       <p className="text-[10px] font-black uppercase tracking-widest text-white/20">{selectedNode.tier}</p>
+                       <h2 className="text-xl font-black text-white">{selectedNode.modelName}</h2>
+                       <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mt-1 italic">{selectedNode.tier}</p>
                     </div>
                  </div>
-                 <button onClick={() => setSelectedNode(null)} className="p-2 hover:bg-white/5 rounded-full"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                 <button onClick={() => setSelectedNode(null)} className="p-3 hover:bg-white/5 rounded-full text-white/40 hover:text-white transition-colors"><X size={24} /></button>
               </div>
-              <div className="p-10 overflow-y-auto prose prose-invert prose-sm max-w-none">
-                 <ReactMarkdown>{selectedNode.content || "Generating logic stream..."}</ReactMarkdown>
+              <div className="p-12 overflow-y-auto prose prose-invert max-w-none custom-scrollbar">
+                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedNode.content || "Generating logic stream..."}</ReactMarkdown>
               </div>
            </div>
         </div>
       )}
 
       <svg className="absolute inset-0 pointer-events-none z-0" width="100%" height="100%">
-        {nodePositions['input'] && l1Nodes.map((n, i) => (
-          nodePositions[n.id] && <FlowLine key={n.id} x1={nodePositions['input'].x} y1={nodePositions['input'].y} x2={nodePositions[n.id].x} y2={nodePositions[n.id].y} isActive={['querying_l1', 'querying_l2', 'done'].includes(phase)} color="#10b981" />
-        ))}
-        {l1Nodes.map((n, i) => (
-          nodePositions[n.id] && nodePositions['l2'] && <FlowLine key={`${n.id}-l2`} x1={nodePositions[n.id].x} y1={nodePositions[n.id].y} x2={nodePositions['l2'].x} y2={nodePositions['l2'].y} isActive={['querying_l2', 'done'].includes(phase)} color={n.model?.color || '#3b82f6'} />
+        {nodePositions['input'] && (
+           <>
+              {isFileAttached ? (
+                 <>
+                    <FlowLine x1={nodePositions['input'].x} y1={nodePositions['input'].y} x2={nodePositions['retrieval'].x} y2={nodePositions['retrieval'].y} isActive={isThinking} color="#10b981" />
+                    {l1Nodes.map((n) => (
+                       nodePositions[n.id] && <FlowLine key={n.id} x1={nodePositions['retrieval'].x} y1={nodePositions['retrieval'].y} x2={nodePositions[n.id].x} y2={nodePositions[n.id].y} isActive={['querying_l1', 'querying_l2', 'done'].includes(phase)} color="#10b981" />
+                    ))}
+                 </>
+              ) : (
+                 l1Nodes.map((n) => (
+                    nodePositions[n.id] && <FlowLine key={n.id} x1={nodePositions['input'].x} y1={nodePositions['input'].y} x2={nodePositions[n.id].x} y2={nodePositions[n.id].y} isActive={isThinking} color="#ea3a5b" />
+                 ))
+              )}
+           </>
+        )}
+        {l1Nodes.map((n) => (
+          nodePositions[n.id] && nodePositions['l2'] && <FlowLine key={`${n.id}-l2`} x1={nodePositions[n.id].x} y1={nodePositions[n.id].y} x2={nodePositions['l2'].x} y2={nodePositions['l2'].y} isActive={['querying_l2', 'done'].includes(phase) || !!responseL2} color={n.model?.color || '#3b82f6'} />
         ))}
       </svg>
 
       {nodePositions['input'] && (
-        <AutomationNode x={nodePositions['input'].x} y={nodePositions['input'].y} status={getStatus('input')} title="Input" subtitle="Source" onMouseDown={(e) => handleMouseDown('input', e)}>
-           <p className="text-[9px] text-white/50 truncate max-w-[120px]">{prompt}</p>
+        <AutomationNode x={nodePositions['input'].x} y={nodePositions['input'].y} status={getStatus('input')} title="Audit Input" subtitle="Registry" onMouseDown={(e) => handleMouseDown('input', e)}>
+           <p className="text-[9px] text-white/50 truncate max-w-[120px] font-mono italic">Awaiting Deliberation...</p>
+        </AutomationNode>
+      )}
+
+      {isFileAttached && nodePositions['retrieval'] && (
+        <AutomationNode x={nodePositions['retrieval'].x} y={nodePositions['retrieval'].y} status={getStatus('retrieval')} title="Forensic RAG" subtitle="Read Document" onMouseDown={(e) => handleMouseDown('retrieval', e)}>
+           <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden mt-1">
+              <div className={`h-full bg-emerald-500 transition-all duration-[2000ms] ${phase === 'reading_file' ? 'w-full' : 'w-0'}`} />
+           </div>
         </AutomationNode>
       )}
 
       {l1Nodes.map(n => nodePositions[n.id] && (
-        <AutomationNode key={n.id} x={nodePositions[n.id].x} y={nodePositions[n.id].y} status={getStatus('l1')} color={n.model?.color} title={n.model?.name} subtitle="Deliberator" icon={n.model?.icon} onMouseDown={(e) => handleMouseDown(n.id, e)} onClick={() => setSelectedNode({ modelName: n.model?.name, icon: n.model?.icon, tier: 'Level 1', content: getL1Response(n.modelId)?.response })}>
-           {getStatus('l1') === 'thinking' && <div className="text-[9px] animate-pulse">Deliberating...</div>}
-           {getL1Response(n.modelId)?.status === 'success' && <div className="text-[9px] text-white/40 italic">Review Output →</div>}
+        <AutomationNode key={n.id} x={nodePositions[n.id].x} y={nodePositions[n.id].y} status={getStatus('l1', n.modelId)} color={n.model?.color} title={n.model?.name} subtitle="Council Node" icon={n.model?.icon} onMouseDown={(e) => handleMouseDown(n.id, e)} onClick={() => setSelectedNode({ modelName: n.model?.name, icon: n.model?.icon, tier: 'Level 1 Analysis', content: getL1Response(n.modelId)?.response })}>
+           {getStatus('l1') === 'thinking' && <div className="text-[9px] animate-pulse text-[#ea3a5b] font-black uppercase tracking-widest">Deliberating...</div>}
+           {getL1Response(n.modelId) && <div className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-2 italic">Review Findings <ArrowRight size={10} /></div>}
         </AutomationNode>
       ))}
 
       {nodePositions['l2'] && (
-        <AutomationNode x={nodePositions['l2'].x} y={nodePositions['l2'].y} status={getStatus('l2')} color={getModelById(config?.layer2 || 'gpt')?.color} title={getModelById(config?.layer2 || 'gpt')?.name} subtitle="Final Verdict" icon={getModelById(config?.layer2 || 'gpt')?.icon} onMouseDown={(e) => handleMouseDown('l2', e)} onClick={() => setSelectedNode({ modelName: getModelById(config?.layer2 || 'gpt')?.name, icon: getModelById(config?.layer2 || 'gpt')?.icon, tier: 'Level 2', content: responseL2?.response })}>
-           {getStatus('l2') === 'thinking' && <div className="text-[9px] animate-pulse">Synthesizing...</div>}
-           {responseL2 && <div className="text-[9px] text-emerald-400 font-bold">Consensus Reached →</div>}
+        <AutomationNode x={nodePositions['l2'].x} y={nodePositions['l2'].y} status={getStatus('l2')} color={l2Model?.color} title={l2Model?.name} subtitle="Final Arbiter" icon={l2Model?.icon} onMouseDown={(e) => handleMouseDown('l2', e)} onClick={() => setSelectedNode({ modelName: l2Model?.name, icon: l2Model?.icon, tier: 'Consensus Outcome', content: (typeof responseL2 === 'string' ? responseL2 : responseL2?.response) })}>
+           {getStatus('l2') === 'thinking' && <div className="text-[9px] animate-pulse text-blue-500 font-black uppercase tracking-widest">Synthesizing...</div>}
+           {responseL2 && <div className="text-[9px] text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-2 italic">Consensus Reached <ArrowRight size={10} /></div>}
         </AutomationNode>
       )}
     </div>
@@ -164,11 +238,25 @@ export default function FlowCanvas({
 
 function FlowLine({ x1, y1, x2, y2, isActive, color }) {
   const midX = x1 + (x2 - x1) * 0.5;
+  // Use quadratic Bezier for nice curves
   const path = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
   return (
     <g>
       <path d={path} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="1.5" />
-      {isActive && <path d={path} fill="none" stroke={color} strokeWidth="2" strokeDasharray="5 5" style={{ animation: 'flow-dash 2s linear infinite' }} />}
+      {isActive && (
+         <>
+            <path d={path} fill="none" stroke={color} strokeWidth="2.5" strokeDasharray="6 6" className="flow-dash-animation" style={{ filter: `drop-shadow(0 0 5px ${color})` }} />
+            <style>{`
+               .flow-dash-animation {
+                  animation: flowDashMove 1.5s linear infinite;
+               }
+               @keyframes flowDashMove {
+                  from { stroke-dashoffset: 12; }
+                  to { stroke-dashoffset: 0; }
+               }
+            `}</style>
+         </>
+      )}
     </g>
   );
 }
@@ -179,21 +267,24 @@ function AutomationNode({ x, y, status, icon, title, subtitle, children, color, 
   return (
     <div 
       onMouseDown={onMouseDown}
-      onClick={isDone ? onClick : undefined}
-      className={`absolute z-10 transition-shadow select-none ${isDone ? 'cursor-grab active:cursor-grabbing' : 'opacity-40 pointer-events-none'}`} 
-      style={{ left: x, top: y, width: 180, transform: `translate(-50%, -50%)` }}
+      onClick={onClick}
+      className={`absolute z-10 transition-all select-none cursor-pointer hover:translate-y-[-2px] ${isDone ? 'opacity-100' : 'opacity-40 grayscale-[0.5]'}`} 
+      style={{ left: x, top: y, width: 220, transform: `translate(-50%, -50%)` }}
     >
-      <div className={`rounded-2xl bg-[#0f1115] border ${isActive ? 'border-blue-500 shadow-[0_0_30px_rgba(59,130,246,0.2)]' : isDone ? 'border-white/10 hover:border-white/30' : 'border-white/5'} transition-all`}>
-        <div className="flex items-center gap-2 p-3 bg-white/[0.02] border-b border-white/[0.05]">
-          <div className="w-6 h-6 rounded bg-white/5 p-1 flex items-center justify-center border border-white/5">
-             <img src={icon} className="w-full h-full object-contain" alt="" />
+      <div className={`rounded-2xl bg-[#0f1115] border transition-all duration-500 overflow-hidden shadow-2xl ${isActive ? 'border-[#ea3a5b] shadow-[0_0_40px_rgba(234,58,91,0.2)]' : isDone ? 'border-white/10 hover:border-emerald-500/30' : 'border-white/5'}`}>
+        <div className="flex items-center gap-3 p-4 bg-white/[0.03] border-b border-white/[0.05]">
+          <div className="w-10 h-10 rounded-xl bg-white p-2 flex items-center justify-center border border-white/5 shadow-inner overflow-hidden">
+             {icon ? <img src={icon} className="w-full h-full object-contain" alt="" /> : <Cpu size={20} className="text-black" />}
           </div>
-          <div className="min-w-0">
-            <h3 className="text-[10px] font-black text-white/90 uppercase tracking-widest truncate">{title}</h3>
-            <p className="text-[8px] text-white/30 font-bold uppercase tracking-widest">{subtitle}</p>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-[11px] font-black text-white uppercase tracking-widest truncate">{title}</h3>
+            <p className="text-[8px] text-white/20 font-black uppercase tracking-[0.3em] mt-0.5">{subtitle}</p>
           </div>
+          {isDone && <CheckCircle2 size={12} className="text-emerald-500 flex-shrink-0" />}
         </div>
-        <div className="p-3 min-h-[44px] flex flex-col justify-center">{children}</div>
+        <div className="p-4 min-h-[50px] flex flex-col justify-center bg-[#09090b]/40">
+           {children}
+        </div>
       </div>
     </div>
   );

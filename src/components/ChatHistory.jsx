@@ -11,7 +11,7 @@ export default function ChatHistory({ history, onSelectSession, activeIndex, onD
     <div className="space-y-1">
       <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-4 px-2">Recent Chats</div>
       {history.map((session, i) => (
-        <div key={session.id} className="group relative">
+        <div key={session._id || session.session_id || session.id || i} className="group relative">
           <button
             onClick={() => onSelectSession(i)}
             className={`w-full text-left px-3 py-2.5 rounded-xl transition-all border ${
