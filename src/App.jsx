@@ -171,6 +171,7 @@ function MainApp() {
           
           if (isDone) {
             setPhase('done');
+            setCurrentView('transcript');
             // Trigger save after state updates
             setTimeout(async () => {
               setHistory(prev => {
