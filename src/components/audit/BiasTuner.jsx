@@ -37,7 +37,7 @@ export default function BiasTuner() {
     setTimeout(() => {
       toast.dismiss();
       toast.success("Neural calibration complete.");
-      navigate('/dashboard');
+      navigate('/');
     }, 2000);
   };
 

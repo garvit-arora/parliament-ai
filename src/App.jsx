@@ -79,9 +79,9 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
              <div className="flex items-center justify-between mb-8 px-2">
                 <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
                    <img src="/logo.png" alt="" className="w-8 h-8 object-contain" />
-                   <span className="font-black text-sm uppercase tracking-[0.2em] text-white/50">Council<span className="text-[#ea3a5b]">X</span></span>
+                   <span className="font-black text-sm uppercase tracking-[0.2em] text-white">Council<span className="text-[#ea3a5b]">X</span></span>
                 </div>
-                <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-white/5 rounded-lg text-white/20 hover:text-white transition-colors"><Search size={16} /></button>
+                <button onClick={() => setIsSearchOpen(true)} className="p-2 hover:bg-white/5 rounded-lg text-white hover:text-white transition-colors"><Search size={16} /></button>
              </div>
              
              <button onClick={handleNewChat} className="w-full h-12 bg-[#1a1b26] border border-white/5 rounded-2xl text-sm font-bold mb-8 flex items-center justify-center gap-3 hover:bg-white/5 transition-all group">
@@ -90,7 +90,7 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
              </button>
              
              <div className="mb-8 px-2">
-                <div className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20 mb-6 px-1">Audit Tools</div>
+                <div className="text-[9px] font-black uppercase tracking-[0.4em] text-white mb-6 px-1">Audit Tools</div>
                 <div className="space-y-1">
                    {[
                      { n: 'Data Scanner', i: <Database size={16} />, path: '/audit/scanner' },
@@ -102,7 +102,7 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
                      <button 
                         key={t.n} 
                         onClick={() => navigate(t.path)} 
-                        className={`w-full flex items-center gap-4 px-3 py-3 rounded-2xl text-[13px] font-bold transition-all group ${location.pathname === t.path ? 'bg-[#ea3a5b]/10 text-[#ea3a5b]' : 'text-white/30 hover:bg-white/5 hover:text-white'}`}
+                        className={`w-full flex items-center gap-4 px-3 py-3 rounded-2xl text-[13px] font-bold transition-all group ${location.pathname === t.path ? 'bg-[#ea3a5b]/10 text-[#ea3a5b]' : 'text-white hover:bg-white/5 hover:text-white'}`}
                       >
                         <span className={`transition-opacity ${location.pathname === t.path ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>{t.i}</span>
                         {t.n}
@@ -127,11 +127,11 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
               ) : activeSession && location.pathname === '/' ? (
                 <>
                   <div className="flex items-center bg-white/5 rounded-2xl p-1 border border-white/5 overflow-hidden flex-shrink-0">
-                     <button onClick={() => setCurrentView('flow')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Process Map</button>
-                     <button onClick={() => setCurrentView('transcript')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white/40 hover:text-white'}`}>Transcript</button>
+                     <button onClick={() => setCurrentView('flow')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white hover:text-white'}`}>Process Map</button>
+                     <button onClick={() => setCurrentView('transcript')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white hover:text-white'}`}>Transcript</button>
                   </div>
                   <div className="h-4 w-[1px] bg-white/10 flex-shrink-0 mx-2" />
-                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 truncate italic flex-grow">{activeSession.title}</div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white truncate italic flex-grow">{activeSession.title}</div>
                 </>
               ) : (
                 <div className="w-8" />
@@ -139,7 +139,12 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
            </div>
            
            <div className="flex items-center gap-4">
-              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-white/20 hover:text-white flex items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+              <button onClick={() => navigate('/whitepaper')} className="text-[10px] font-black uppercase tracking-widest text-white hover:text-white flex items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+                <FileText size={14} className="group-hover:text-[#ea3a5b] transition-colors" />
+                Whitepaper
+              </button>
+              
+              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-white hover:text-white flex items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
                 <Share2 size={14} className="group-hover:text-[#ea3a5b] transition-colors" />
                 Share
               </button>
@@ -152,7 +157,7 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
                  </div>
               </button>
 
-              <button onClick={handleLogout} className="p-2 text-white/20 hover:text-rose-500 transition-colors"><LogOut size={16} /></button>
+              <button onClick={handleLogout} className="p-2 text-white hover:text-rose-500 transition-colors"><LogOut size={16} /></button>
            </div>
         </header>
 
@@ -421,15 +426,15 @@ function MainApp() {
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
           placeholder="Ask anything..."
-          className="w-full px-10 pt-10 pb-4 bg-transparent text-white text-base outline-none resize-none min-h-[120px] font-medium leading-relaxed placeholder:text-white/20"
+          className="w-full px-10 pt-10 pb-4 bg-transparent text-white text-base outline-none resize-none min-h-[120px] font-medium leading-relaxed placeholder:text-white"
         />
         <div className="flex items-center justify-between px-10 pb-8">
           <div className="flex gap-4 items-center">
-             <button onClick={() => fileInputRef.current?.click()} className="p-4 rounded-full bg-white/5 border border-white/10 text-white/20 hover:text-white hover:bg-[#ea3a5b]/20 hover:border-[#ea3a5b]/40 transition-all"><Plus size={20} /></button>
-             <button onClick={startSTT} className={`p-4 rounded-full transition-all border ${isListening ? 'bg-rose-500/20 border-rose-500 text-rose-500 animate-pulse' : 'bg-white/5 border-white/10 text-white/20 hover:text-white'}`}><Mic size={20} /></button>
-             <button onClick={() => setIsConfigOpen(!isConfigOpen)} className={`px-6 py-3 rounded-2xl border transition-all flex items-center gap-3 group ${isConfigOpen ? 'bg-[#ea3a5b]/20 border-[#ea3a5b] text-[#ea3a5b]' : 'bg-white/5 border-white/10 text-white/20 hover:text-white'}`}>
+             <button onClick={() => fileInputRef.current?.click()} className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:text-white hover:bg-[#ea3a5b]/20 hover:border-[#ea3a5b]/40 transition-all"><Plus size={20} /></button>
+             <button onClick={startSTT} className={`p-4 rounded-full transition-all border ${isListening ? 'bg-rose-500/20 border-rose-500 text-rose-500 animate-pulse' : 'bg-white/5 border-white/10 text-white hover:text-white'}`}><Mic size={20} /></button>
+             <button onClick={() => setIsConfigOpen(!isConfigOpen)} className={`px-6 py-3 rounded-2xl border transition-all flex items-center gap-3 group ${isConfigOpen ? 'bg-[#ea3a5b]/20 border-[#ea3a5b] text-[#ea3a5b]' : 'bg-white/5 border-white/10 text-white hover:text-white'}`}>
                 <Cpu size={18} />
-                <span className="text-[10px] font-black uppercase tracking-widest">Model Settings</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Choose Models</span>
              </button>
           </div>
           <div className="flex items-center gap-4">
@@ -484,15 +489,15 @@ function MainApp() {
                <Routes>
                   <Route path="/" element={
                     <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
-                       <div className="flex-1 overflow-y-auto p-4 md:p-12 mb-4" ref={scrollRef}>
+                       <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-y-hidden'} p-4 md:p-12 mb-4`} ref={scrollRef}>
                           <div className="w-full space-y-16 py-10">
                              {!activeSession && (
                                <div className="h-[60vh] flex items-center justify-center text-center">
                                   <div className="relative z-10 w-full px-12">
-                                     <h2 className="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40">
+                                     <h2 className="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white">
                                         {new Date().getHours() < 12 ? 'Good Morning,' : new Date().getHours() < 18 ? 'Good Afternoon,' : 'Good Evening,'} <span className="text-[#ea3a5b]">{(currentUser?.displayName || currentUser?.display_name || currentUser?.email?.split('@')?.[0] || 'there')?.split(' ')?.[0]}</span>.
                                      </h2>
-                                     <p className="text-white/20 text-sm font-black uppercase tracking-[0.4em] mt-6">
+                                     <p className="text-white text-sm font-black uppercase tracking-[0.4em] mt-6">
                                         {randomTagline}
                                      </p>
                                   </div>
@@ -504,7 +509,7 @@ function MainApp() {
                                {(() => {
                                    const msgs = activeSession?.messages || [];
                                    const lastMsg = msgs[msgs.length - 1];
-                                   const processedPrompt = lastMsg?.prompt || prompt; // Fallback to current prompt from closure
+                                   const processedPrompt = lastMsg?.prompt || inputValue;
                                    if (!processedPrompt) return null;
                                   return (
                                      <div 
@@ -517,7 +522,7 @@ function MainApp() {
                                            </div>
                                            <div className="min-w-0 flex-1">
                                               <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-1.5 opacity-80 italic">Input</div>
-                                              <div className={`text-sm font-semibold text-white/90 leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate'}`}>"{processedPrompt}"</div>
+                                              <div className={`text-sm font-semibold text-white leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate'}`}>"{processedPrompt}"</div>
                                            </div>
                                         </div>
                                      </div>
@@ -552,7 +557,7 @@ function MainApp() {
                                 <div className="w-full px-8 space-y-16">
                                    {activeSession.messages.map((msg, mIdx) => (
                                      <div key={mIdx} className="space-y-10 animate-in fade-in duration-700">
-                                        <div className="flex justify-end w-full"><div className="bg-white/5 px-10 py-6 rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white/90 max-w-[70%] border border-white/[0.05] shadow-2xl">{msg.prompt}</div></div>
+                                        <div className="flex justify-end w-full"><div className="bg-white/5 px-10 py-6 rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white max-w-[70%] border border-white/[0.05] shadow-2xl">{msg.prompt}</div></div>
                                         {(msg.responseL2 || msg.isProcessing) && (
                                            <div className="flex gap-10 group w-full">
                                               <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center relative p-2 overflow-hidden">
@@ -560,7 +565,7 @@ function MainApp() {
                                               </div>
                                               <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-10 rounded-[32px] rounded-tl-none prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 max-w-[85%] shadow-sm overflow-x-auto min-h-[100px]">
                                                  {msg.isProcessing && !msg.responseL2 ? (
-                                                   <div className="flex items-center gap-3 text-white/40 italic">
+                                                   <div className="flex items-center gap-3 text-white italic">
                                                        <div className="w-2 h-2 bg-[#ea3a5b] rounded-full animate-ping" />
                                                        <span className="text-[#ea3a5b] font-black uppercase tracking-widest text-[10px]">{statusText || "The Council is deliberating..."}</span>
                                                     </div>
@@ -574,13 +579,13 @@ function MainApp() {
                                                         <div className="flex items-center gap-4 mt-8 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                                            <button 
                                                               onClick={() => handleFeedback(mIdx, 'like')}
-                                                              className={`p-2 rounded-lg transition-all ${msg.feedback === 'like' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' : 'bg-white/10 text-white/20 hover:text-white hover:bg-white/20'}`}
+                                                              className={`p-2 rounded-lg transition-all ${msg.feedback === 'like' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' : 'bg-white/10 text-white hover:text-white hover:bg-white/20'}`}
                                                            >
                                                               <ThumbsUp size={14} />
                                                            </button>
                                                            <button 
                                                               onClick={() => handleFeedback(mIdx, 'dislike')}
-                                                              className={`p-2 rounded-lg transition-all ${msg.feedback === 'dislike' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 scale-110' : 'bg-white/10 text-white/20 hover:text-white hover:bg-white/20'}`}
+                                                              className={`p-2 rounded-lg transition-all ${msg.feedback === 'dislike' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 scale-110' : 'bg-white/10 text-white hover:text-white hover:bg-white/20'}`}
                                                            >
                                                               <ThumbsDown size={14} />
                                                            </button>

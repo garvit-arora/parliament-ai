@@ -204,7 +204,7 @@ body {
 .prose-invert strong { @apply text-white font-bold; }
 .prose-invert ul { @apply list-disc ml-6 mb-4 space-y-2; }
 .prose-invert ol { @apply list-decimal ml-6 mb-4 space-y-2; }
-.prose-invert li { @apply text-white/80; }
+.prose-invert li { @apply text-white; }
 .prose-invert code { @apply bg-white/10 px-1.5 py-0.5 rounded text-sm font-mono text-[#ea3a5b]; }
-.prose-invert blockquote { @apply border-l-4 border-white/10 pl-4 italic text-white/60 mb-4; }
+.prose-invert blockquote { @apply border-l-4 border-white/10 pl-4 italic text-white mb-4; }
 .prose-invert hr { @apply border-white/5 my-8; }

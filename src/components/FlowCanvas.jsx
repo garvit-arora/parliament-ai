@@ -187,7 +187,7 @@ export default function FlowCanvas({
                        <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mt-1 italic">{selectedNode.tier}</p>
                     </div>
                  </div>
-                 <button onClick={() => setSelectedNode(null)} className="p-3 hover:bg-white/5 rounded-full text-white/40 hover:text-white transition-colors"><X size={24} /></button>
+                 <button onClick={() => setSelectedNode(null)} className="p-3 hover:bg-white/5 rounded-full text-white hover:text-white transition-colors"><X size={24} /></button>
               </div>
               <div className="p-12 overflow-y-auto prose prose-invert max-w-none custom-scrollbar">
                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{selectedNode.content || "Generating logic stream..."}</ReactMarkdown>

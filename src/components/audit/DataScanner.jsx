@@ -28,7 +28,7 @@ export default function DataScanner() {
       toast.dismiss();
       toast.success("Audit complete.");
       setIsUploading(false);
-      navigate('/dashboard');
+      navigate('/');
     }, 3000);
   };
 

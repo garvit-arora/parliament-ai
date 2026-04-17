@@ -25,12 +25,12 @@ export default function LandingPage({ onLoginClick }) {
 
             <div className="hidden lg:flex items-center gap-8 ml-4">
               <div className="relative group/menu py-6">
-                <button className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors flex items-center gap-1">
+                <button className="text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:text-white transition-colors flex items-center gap-1">
                   Audit Tools <ChevronDown className="w-3 h-3 group-hover/menu:rotate-180 transition-transform" />
                 </button>
                 {/* MEGA MENU */}
                 <div className="absolute top-full left-0 w-72 bg-[#0d0d12] border border-white/10 rounded-2xl p-4 mt-2 shadow-2xl opacity-0 translate-y-4 pointer-events-none group-hover/menu:opacity-100 group-hover/menu:translate-y-0 group-hover/menu:pointer-events-auto transition-all duration-300">
-                    <div className="text-[9px] font-bold text-white/30 uppercase tracking-widest mb-4 px-2">Available Tools</div>
+                    <div className="text-[9px] font-bold text-white uppercase tracking-widest mb-4 px-2">Available Tools</div>
                     <div className="space-y-1">
                       {[
                         { name: 'Data Scanner', icon: <Database size={14} />, desc: 'Index and scan forensic datasets' },
@@ -44,16 +44,22 @@ export default function LandingPage({ onLoginClick }) {
                             {t.icon}
                           </div>
                           <div>
-                            <div className="text-xs font-bold text-white/80 group-hover:text-white transition-colors">{t.name}</div>
-                            <div className="text-[10px] text-white/30 mt-0.5">{t.desc}</div>
+                            <div className="text-xs font-bold text-white group-hover:text-white transition-colors">{t.name}</div>
+                            <div className="text-[10px] text-white mt-0.5">{t.desc}</div>
                           </div>
                         </button>
                       ))}
                     </div>
                 </div>
               </div>
-              <a href="#logic" className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">Technology</a>
-              <a href="#pricing" className="text-[11px] font-bold uppercase tracking-[0.2em] text-white/50 hover:text-white transition-colors">Pricing</a>
+              <a href="#logic" className="text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:text-white transition-colors">Technology</a>
+              <a href="#pricing" className="text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:text-white transition-colors">Pricing</a>
+              <button 
+                 onClick={() => window.open('/whitepaper', '_blank')} 
+                 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white hover:text-white transition-colors"
+              >
+                Whitepaper
+              </button>
             </div>
           </div>
           
@@ -72,7 +78,7 @@ export default function LandingPage({ onLoginClick }) {
             Neutralize Bias in <br />
             Automated Decisions.
           </h1>
-          <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white/40 font-normal leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
+          <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white font-normal leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
             When programs decide who gets a job or a loan, historical data flaws become discriminatory mistakes. We build the layer that detects and fixes bias before it impacts lives.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-400">
@@ -80,7 +86,7 @@ export default function LandingPage({ onLoginClick }) {
               Run a Bias Audit
               <Zap size={20} />
             </button>
-            <a href="#logic" className="text-lg font-medium text-white/30 hover:text-white transition-colors flex items-center gap-2 group">
+            <a href="#logic" className="text-lg font-medium text-white hover:text-white transition-colors flex items-center gap-2 group">
               How it works
               <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
             </a>
@@ -109,8 +115,8 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-lg">💬</div>
                   <div className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">User Prompt</div>
-                    <div className="text-xs font-medium text-white/60 italic">"Was the hiring process biased?"</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white mb-1">User Prompt</div>
+                    <div className="text-xs font-medium text-white italic">"Was the hiring process biased?"</div>
                   </div>
                 </div>
                 
@@ -118,7 +124,7 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex justify-center">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-px h-4 bg-white/20" />
-                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
                   </div>
                 </div>
                 
@@ -139,7 +145,7 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex justify-center">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-px h-4 bg-white/20" />
-                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
                   </div>
                 </div>
                 
@@ -148,7 +154,7 @@ export default function LandingPage({ onLoginClick }) {
                   <div className="w-10 h-10 rounded-xl bg-[#ea3a5b]/10 border border-[#ea3a5b]/30 flex items-center justify-center shrink-0 text-lg">⚖️</div>
                   <div className="flex-1 bg-[#ea3a5b]/5 border border-[#ea3a5b]/20 rounded-xl px-4 py-3">
                     <div className="text-[10px] font-black uppercase tracking-widest text-[#ea3a5b] mb-1">Layer 2 — Final Arbiter</div>
-                    <div className="text-xs text-white/50">Synthesizes, detects bias, outputs verdict</div>
+                    <div className="text-xs text-white">Synthesizes, detects bias, outputs verdict</div>
                   </div>
                 </div>
 
@@ -156,7 +162,7 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex justify-center">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-px h-4 bg-white/20" />
-                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
                   </div>
                 </div>
                 
@@ -165,7 +171,7 @@ export default function LandingPage({ onLoginClick }) {
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 text-lg">✅</div>
                   <div className="flex-1 bg-emerald-500/5 border border-emerald-500/20 rounded-xl px-4 py-3">
                     <div className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1">Bias-Corrected Answer</div>
-                    <div className="text-xs text-white/50">Neutral, verified, forensically graded</div>
+                    <div className="text-xs text-white">Neutral, verified, forensically graded</div>
                   </div>
                 </div>
               </div>
@@ -182,8 +188,8 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-lg">📄</div>
                   <div className="flex-1 bg-white/[0.03] border border-white/10 rounded-xl px-4 py-3">
-                    <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">Document Upload</div>
-                    <div className="text-xs font-medium text-white/60 italic">loan_applications_2023.csv</div>
+                    <div className="text-[10px] font-black uppercase tracking-widest text-white mb-1">Document Upload</div>
+                    <div className="text-xs font-medium text-white italic">loan_applications_2023.csv</div>
                   </div>
                 </div>
 
@@ -191,7 +197,7 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex justify-center">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-px h-4 bg-white/20" />
-                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
                   </div>
                 </div>
 
@@ -200,7 +206,7 @@ export default function LandingPage({ onLoginClick }) {
                   <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center shrink-0"><Database size={18} className="text-purple-400" /></div>
                   <div className="flex-1 bg-purple-500/5 border border-purple-500/20 rounded-xl px-4 py-3">
                     <div className="text-[10px] font-black uppercase tracking-widest text-purple-400 mb-1">Data Scanner — Vector Index</div>
-                    <div className="text-xs text-white/50">Chunks embedded into searchable memory</div>
+                    <div className="text-xs text-white">Chunks embedded into searchable memory</div>
                   </div>
                 </div>
 
@@ -208,7 +214,7 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex justify-center">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-px h-4 bg-white/20" />
-                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
                   </div>
                 </div>
 
@@ -217,7 +223,7 @@ export default function LandingPage({ onLoginClick }) {
                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 text-lg">🧠</div>
                   <div className="flex-1 bg-blue-500/5 border border-blue-500/20 rounded-xl px-4 py-3">
                     <div className="text-[10px] font-black uppercase tracking-widest text-blue-400 mb-2">Layer 1 — Grounded on Your Data</div>
-                    <div className="text-xs text-white/50">Models receive retrieved data context alongside prompt</div>
+                    <div className="text-xs text-white">Models receive retrieved data context alongside prompt</div>
                   </div>
                 </div>
 
@@ -225,7 +231,7 @@ export default function LandingPage({ onLoginClick }) {
                 <div className="flex justify-center">
                   <div className="flex flex-col items-center gap-1">
                     <div className="w-px h-4 bg-white/20" />
-                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white/20"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
+                    <svg width="10" height="6" viewBox="0 0 10 6" className="text-white"><path d="M0 0L5 6L10 0" fill="currentColor" /></svg>
                   </div>
                 </div>
 
@@ -234,7 +240,7 @@ export default function LandingPage({ onLoginClick }) {
                   <div className="w-10 h-10 rounded-xl bg-[#ea3a5b]/10 border border-[#ea3a5b]/30 flex items-center justify-center shrink-0 text-lg">⚖️</div>
                   <div className="flex-1 bg-[#ea3a5b]/5 border border-[#ea3a5b]/20 rounded-xl px-4 py-3">
                     <div className="text-[10px] font-black uppercase tracking-widest text-[#ea3a5b] mb-1">Arbiter — Dataset-Grounded Bias Grade</div>
-                    <div className="text-xs text-white/50">Cites specific rows, scores disparity rates</div>
+                    <div className="text-xs text-white">Cites specific rows, scores disparity rates</div>
                   </div>
                 </div>
               </div>
@@ -250,7 +256,7 @@ export default function LandingPage({ onLoginClick }) {
               <div key={idx} className="space-y-6 flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-[#ea3a5b]/10 flex items-center justify-center mb-2">{f.i}</div>
                 <h4 className="text-xl font-bold text-white">{f.t}</h4>
-                <p className="text-white/40 text-sm leading-relaxed max-w-xs">{f.d}</p>
+                <p className="text-white text-sm leading-relaxed max-w-xs">{f.d}</p>
               </div>
             ))}
           </div>
@@ -261,18 +267,18 @@ export default function LandingPage({ onLoginClick }) {
       <section className="min-h-screen flex items-center py-20 bg-[#09090b] border-t border-white/5">
         <div className="max-w-4xl mx-auto px-8 text-center w-full">
            <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-10 leading-tight">A foundation built on <br /><span className="text-[#ea3a5b]">objective truth.</span></h2>
-           <p className="text-xl text-white/40 leading-relaxed font-normal mb-20 max-w-2xl mx-auto">
+           <p className="text-xl text-white leading-relaxed font-normal mb-20 max-w-2xl mx-auto">
               Our auditing protocol is hard-coded to prioritize equitable outcomes over flawed historical inputs.
            </p>
            
            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
               <div className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
                  <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-widest text-xs">Constitutional Neutrality</h4>
-                 <p className="text-sm text-white/30 leading-relaxed">Models are hard-coded to ignore demographic proxies that drive unfair rejection or acceptance rates.</p>
+                 <p className="text-sm text-white leading-relaxed">Models are hard-coded to ignore demographic proxies that drive unfair rejection or acceptance rates.</p>
               </div>
               <div className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
                  <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-widest text-xs">Zero-Bias Persistence</h4>
-                 <p className="text-sm text-white/30 leading-relaxed">Every forensic audit is stateful but ephemeral—your sensitive data is processed for verification, never stored for model training.</p>
+                 <p className="text-sm text-white leading-relaxed">Every forensic audit is stateful but ephemeral—your sensitive data is processed for verification, never stored for model training.</p>
               </div>
            </div>
         </div>
@@ -283,14 +289,14 @@ export default function LandingPage({ onLoginClick }) {
         <div className="max-w-7xl mx-auto px-8 w-full">
            <div className="text-center mb-24">
               <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 italic uppercase">Pricing</h2>
-              <p className="text-white/30 text-lg uppercase tracking-widest font-bold">Scale your auditing protocols.</p>
+              <p className="text-white text-lg uppercase tracking-widest font-bold">Scale your auditing protocols.</p>
            </div>
            
            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
              <div className="p-12 rounded-[40px] bg-white/[0.02] border border-white/5 flex flex-col items-center text-center">
-               <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-white/20 mb-8">Auditor</div>
+               <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-white mb-8">Auditor</div>
                <div className="text-7xl font-medium mb-10 text-white leading-none tracking-tighter">$0</div>
-               <ul className="space-y-6 mb-16 text-left w-full text-white/40 text-sm font-medium">
+               <ul className="space-y-6 mb-16 text-left w-full text-white text-sm font-medium">
                  <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">○ 10 Fairness Scans</li>
                  <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">○ Standard Reporting</li>
                  <li className="flex items-center gap-4 tracking-widest uppercase text-[10px]">○ Public Record</li>
@@ -302,7 +308,7 @@ export default function LandingPage({ onLoginClick }) {
                <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-125 transition-transform"><Zap className="text-[#ea3a5b]" size={60} /></div>
                <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#ea3a5b] mb-8 mt-4">Compliance Hero</div>
                <div className="text-7xl font-medium mb-10 text-white leading-none tracking-tighter">$49</div>
-               <ul className="space-y-6 mb-16 text-left w-full text-white/70 text-sm font-medium">
+               <ul className="space-y-6 mb-16 text-left w-full text-white text-sm font-medium">
                  <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">● Unlimited Audit Sessions</li>
                  <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">● Full Adversarial Arbiter</li>
                  <li className="flex items-center gap-4 border-b border-white/5 pb-4 tracking-widest uppercase text-[10px]">● Private Dataset Isolation</li>
@@ -321,12 +327,12 @@ export default function LandingPage({ onLoginClick }) {
               COUNCIL<span className="text-[#ea3a5b]">X</span>
             </h1>
             <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-white/10 gap-8">
-              <div className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30">
+              <div className="text-[10px] font-black uppercase tracking-[0.5em] text-white">
                 © 2026 COUNCILX SYSTEMS • GLOBAL PROTOCOL 01
               </div>
               <div className="flex gap-10">
                 {['Twitter', 'Discord', 'Github'].map(s => (
-                  <div key={s} className="text-[10px] font-black uppercase tracking-[0.5em] text-white/30 hover:text-white transition-colors cursor-pointer">{s}</div>
+                  <div key={s} className="text-[10px] font-black uppercase tracking-[0.5em] text-white hover:text-white transition-colors cursor-pointer">{s}</div>
                 ))}
               </div>
             </div>
