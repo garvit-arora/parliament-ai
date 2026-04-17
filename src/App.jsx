@@ -18,12 +18,12 @@ import FairnessTracker from './components/audit/FairnessTracker';
 import TrustReport from './components/audit/TrustReport';
 import NewsProtocol from './components/audit/NewsProtocol';
 import Whitepaper from './components/audit/Whitepaper';
-import { queryStreamGraph, getChats, saveChat, deleteChat, generateChatTitle, ingestFile, authProfile } from './api/council';
+import { queryStreamGraph, getChats, saveChat, deleteChat, generateChatTitle, ingestFile, authProfile, saveFeedback } from './api/council';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import toast, { Toaster } from 'react-hot-toast';
 import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
-import { Database, Scale, Sliders, CheckCircle2, Download, Search, Settings, Share2, LogOut, User, Plus, Trash2, Cpu, FileText, Zap, Sparkles, ChevronDown, Menu, X, ArrowRight, Globe, Lock, Mic, Volume2, Paperclip, Send, MessageSquare } from 'lucide-react';
+import { Database, Scale, Sliders, CheckCircle2, Download, Search, Settings, Share2, LogOut, User, Plus, Trash2, Cpu, FileText, Zap, Sparkles, ChevronDown, Menu, X, ArrowRight, Globe, Lock, Mic, Volume2, Paperclip, Send, MessageSquare, ThumbsUp, ThumbsDown } from 'lucide-react';
 
 const TAGLINES = [
   "Search something controversial",
@@ -193,11 +193,12 @@ function MainApp() {
   const [attachedFile, setAttachedFile] = useState(null);
   
   const [modelsL1, setModelsL1] = useState(['gpt', 'grok', 'deepseek']);
-  const [modelL2, setModelL2] = useState('gpt');
+  const [modelL2, setModelL2] = useState('grok');
   const [isListening, setIsListening] = useState(false);
   const [isInputExpanded, setIsInputExpanded] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [phase, setPhase] = useState(null); 
+  const [statusText, setStatusText] = useState('');
   const [history, setHistory] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
   const scrollRef = useRef(null);
@@ -296,13 +297,13 @@ function MainApp() {
        setHistory(prev => prev.map(s => {
           if (s.id === currentSessionId || s.session_id === currentSessionId || s._id === currentSessionId) {
              const lastMsg = s.messages[s.messages.length - 1];
-             if (lastMsg && lastMsg.isProcessing) {
-                const newMessages = [...s.messages];
-                newMessages[newMessages.length - 1] = { ...lastMsg, ...updates, isFileAttached: hasFile };
-                return { ...s, messages: newMessages };
-             } else {
-                return { ...s, messages: [...s.messages, { prompt, responseL1: [], responseL2: '', isProcessing: true, isFileAttached: hasFile, ...updates }] };
-             }
+              if (lastMsg && lastMsg.isProcessing) {
+                 const newMessages = [...s.messages];
+                 newMessages[newMessages.length - 1] = { ...lastMsg, ...updates, isFileAttached: hasFile };
+                 return { ...s, messages: newMessages };
+              } else {
+                 return { ...s, messages: [...s.messages, { prompt, responsesL1: [], responseL2: '', isProcessing: true, isFileAttached: hasFile, ...updates }] };
+              }
           }
           return s;
        }));
@@ -322,14 +323,28 @@ function MainApp() {
 
     try {
       await queryStreamGraph(currentUser.uid, prompt, existingSession?.messages || [], mappedL1, mappedL2, (event) => {
-        if (event.node === 'retrieval_node') { setPhase('querying_l1'); }
-        else if (event.node === 'layer1_node') { updateMessage({ responsesL1: event.state.l1_responses }); setPhase('querying_l2'); }
+        if (event.state?.status) {
+           setStatusText(event.state.status);
+        }
+
+        if (event.node === 'retrieval_node') { 
+          updateMessage({}); // Initialize message structure immediately
+          setPhase('web_searching'); 
+        }
+        else if (event.node === 'web_research_node') {
+          setPhase('querying_l1');
+        }
+        else if (event.node === 'layer1_node') { 
+          updateMessage({ responsesL1: event.state.l1_responses }); 
+          setPhase('querying_l2'); 
+        }
         else if (event.node === 'layer2_node') { 
           const isDone = !event.state.needs_reconsideration;
           updateMessage({ responseL2: event.state.l2_response, isProcessing: !isDone }); 
           if (isDone) {
             setPhase('done');
             setCurrentView('transcript');
+            // Save after a short delay
             setTimeout(async () => {
               setHistory(prev => {
                 const current = prev.find(s => (s.id === currentSessionId || s.session_id === currentSessionId || s._id === currentSessionId));
@@ -337,7 +352,14 @@ function MainApp() {
                 return prev;
               });
             }, 500);
-          } else { setPhase('querying_l1'); }
+          } else { 
+            setPhase('querying_l1'); 
+          }
+        }
+        else if (event.node === 'error_node') {
+          toast.error(`Council Error: ${event.state.error}`);
+          updateMessage({ isProcessing: false });
+          setPhase('error');
         }
       }, controller.signal, currentSessionId);
     } catch (error) {
@@ -366,6 +388,24 @@ function MainApp() {
 
   const [abortController, setAbortController] = useState(null);
   const handleStop = () => { if (abortController) { abortController.abort(); setAbortController(null); setIsThinking(false); } };
+
+  const handleFeedback = async (mIdx, type) => {
+    if (!activeSessionId) return;
+    try {
+      await saveFeedback(currentUser.uid, activeSessionId, mIdx, type);
+      setHistory(prev => prev.map(s => {
+        if (s.id === activeSessionId || s.session_id === activeSessionId || s._id === activeSessionId) {
+          const newMessages = [...s.messages];
+          newMessages[mIdx] = { ...newMessages[mIdx], feedback: type };
+          return { ...s, messages: newMessages };
+        }
+        return s;
+      }));
+      toast.success(type === 'like' ? 'Upvoted.' : 'Downvoted.');
+    } catch (err) {
+      toast.error("Feedback failed.");
+    }
+  };
 
   const fileInputRef = useRef(null);
   const handleFileUpload = async (e) => { const file = e.target.files[0]; if (!file) return; setAttachedFile(file); toast.success(`${file.name} attached.`); };
@@ -456,78 +496,104 @@ function MainApp() {
                                         {randomTagline}
                                      </p>
                                   </div>
-                               </div>
+                                </div>
                              )}
                              {activeSession && currentView === 'flow' && (
                                 <div className="flex-1 flex flex-col items-center">
-                              {/* HUD OVERLAY - Elevated 'Out of Box' */}
-                              {(() => {
-                                 const msgs = activeSession?.messages || [];
-                                 const lastMsg = msgs[msgs.length - 1];
-                                 const processedPrompt = lastMsg?.prompt || inputValue;
-                                 if (!processedPrompt) return null;
-                                 return (
-                                    <div 
-                                       className="w-full max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-top-4 duration-700 cursor-pointer"
-                                       onClick={() => setIsInputExpanded(!isInputExpanded)}
-                                    >
-                                       <div className="bg-[#12121a]/60 backdrop-blur-3xl border border-white/5 rounded-[32px] p-6 flex items-start gap-6 shadow-2xl transition-all hover:border-[#ea3a5b]/20">
-                                          <div className="w-12 h-12 rounded-2xl bg-[#ea3a5b]/10 flex items-center justify-center text-[#ea3a5b] flex-shrink-0 border border-[#ea3a5b]/20 shadow-lg shadow-[#ea3a5b]/5 mt-1">
-                                             <MessageSquare size={20} />
-                                          </div>
-                                          <div className="min-w-0 flex-1">
-                                             <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-1.5 opacity-80 italic">Input</div>
-                                             <div className={`text-sm font-semibold text-white/90 leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate'}`}>"{processedPrompt}"</div>
-                                          </div>
-                                       </div>
-                                    </div>
-                                 );
-                              })()}
+                               {/* HUD OVERLAY - Elevated 'Out of Box' */}
+                               {(() => {
+                                   const msgs = activeSession?.messages || [];
+                                   const lastMsg = msgs[msgs.length - 1];
+                                   const processedPrompt = lastMsg?.prompt || prompt; // Fallback to current prompt from closure
+                                   if (!processedPrompt) return null;
+                                  return (
+                                     <div 
+                                        className="w-full max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-top-4 duration-700 cursor-pointer"
+                                        onClick={() => setIsInputExpanded(!isInputExpanded)}
+                                     >
+                                        <div className="bg-[#12121a]/60 backdrop-blur-3xl border border-white/5 rounded-[32px] p-6 flex items-start gap-6 shadow-2xl transition-all hover:border-[#ea3a5b]/20">
+                                           <div className="w-12 h-12 rounded-2xl bg-[#ea3a5b]/10 flex items-center justify-center text-[#ea3a5b] flex-shrink-0 border border-[#ea3a5b]/20 shadow-lg shadow-[#ea3a5b]/5 mt-1">
+                                              <MessageSquare size={20} />
+                                           </div>
+                                           <div className="min-w-0 flex-1">
+                                              <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-1.5 opacity-80 italic">Input</div>
+                                              <div className={`text-sm font-semibold text-white/90 leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate'}`}>"{processedPrompt}"</div>
+                                           </div>
+                                        </div>
+                                     </div>
+                                  );
+                               })()}
 
-                                 <div className="w-full max-w-7xl h-[60vh] rounded-[40px] overflow-hidden bg-[#0a0a0b] border border-white/5 relative shadow-inner group">
-                                    <div className="absolute -inset-4 bg-gradient-to-r from-[#ea3a5b]/5 to-blue-500/5 rounded-[60px] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-                                    {(() => {
-                                       const msgs = activeSession?.messages || [];
-                                       const lastMsg = msgs[msgs.length - 1] || {};
-                                       return (
-                                          <FlowCanvas 
-                                             activeSessionId={activeSessionId}
-                                             responsesL1={lastMsg.responsesL1 || []}
-                                             responseL2={lastMsg.responseL2 || ''}
-                                             isThinking={isThinking}
-                                             phase={phase}
-                                             isFileAttached={lastMsg.isFileAttached || attachedFile !== null}
-                                             currentPrompt={lastMsg.prompt || inputValue}
-                                             config={{
-                                                layer1: modelsL1,
-                                                layer2: modelL2
-                                             }} 
-                                          />
-                                       );
-                                    })()}
-                                 </div>
-                               </div>
+                                  <div className="w-full max-w-7xl h-[60vh] rounded-[40px] overflow-hidden bg-[#0a0a0b] border border-white/5 relative shadow-inner group">
+                                     <div className="absolute -inset-4 bg-gradient-to-r from-[#ea3a5b]/5 to-blue-500/5 rounded-[60px] blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                                     {(() => {
+                                        const msgs = activeSession?.messages || [];
+                                        const lastMsg = msgs[msgs.length - 1] || {};
+                                        return (
+                                           <FlowCanvas 
+                                              activeSessionId={activeSessionId}
+                                              responsesL1={lastMsg.responsesL1 || []}
+                                              responseL2={lastMsg.responseL2 || ''}
+                                              isThinking={isThinking}
+                                              phase={phase}
+                                              isFileAttached={lastMsg.isFileAttached || attachedFile !== null}
+                                              currentPrompt={lastMsg.prompt || inputValue}
+                                              config={{
+                                                 layer1: modelsL1,
+                                                 layer2: modelL2
+                                              }} 
+                                           />
+                                        );
+                                     })()}
+                                  </div>
+                                </div>
                              )}
                              {activeSession && currentView === 'transcript' && (
-                               <div className="w-full px-8 space-y-16">
-                                  {activeSession.messages.map((msg, mIdx) => (
-                                    <div key={mIdx} className="space-y-10 animate-in fade-in duration-700">
-                                       <div className="flex justify-end w-full"><div className="bg-white/5 px-10 py-6 rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white/90 max-w-[70%] border border-white/[0.05] shadow-2xl">{msg.prompt}</div></div>
-                                       {msg.responseL2 && (
-                                          <div className="flex gap-10 group w-full">
-                                             <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center relative p-2 overflow-hidden">
-                                                <img src="/logo.png" className="w-full h-full object-contain" alt="CouncilX" />
-                                             </div>
-                                             <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-10 rounded-[32px] rounded-tl-none prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 max-w-[85%] shadow-sm overflow-x-auto min-h-[100px]">
-                                                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                   {typeof msg.responseL2 === 'string' ? msg.responseL2 : msg.responseL2?.response || ''}
-                                                </ReactMarkdown>
-                                             </div>
-                                          </div>
-                                       )}
-                                    </div>
-                                  ))}
-                               </div>
+                                <div className="w-full px-8 space-y-16">
+                                   {activeSession.messages.map((msg, mIdx) => (
+                                     <div key={mIdx} className="space-y-10 animate-in fade-in duration-700">
+                                        <div className="flex justify-end w-full"><div className="bg-white/5 px-10 py-6 rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white/90 max-w-[70%] border border-white/[0.05] shadow-2xl">{msg.prompt}</div></div>
+                                        {(msg.responseL2 || msg.isProcessing) && (
+                                           <div className="flex gap-10 group w-full">
+                                              <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center relative p-2 overflow-hidden">
+                                                 <img src="/logo.png" className="w-full h-full object-contain" alt="CouncilX" />
+                                              </div>
+                                              <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-10 rounded-[32px] rounded-tl-none prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 max-w-[85%] shadow-sm overflow-x-auto min-h-[100px]">
+                                                 {msg.isProcessing && !msg.responseL2 ? (
+                                                   <div className="flex items-center gap-3 text-white/40 italic">
+                                                       <div className="w-2 h-2 bg-[#ea3a5b] rounded-full animate-ping" />
+                                                       <span className="text-[#ea3a5b] font-black uppercase tracking-widest text-[10px]">{statusText || "The Council is deliberating..."}</span>
+                                                    </div>
+                                                 ) : (
+                                                   <>
+                                                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                         {typeof msg.responseL2 === 'string' ? msg.responseL2 : msg.responseL2?.response || ''}
+                                                      </ReactMarkdown>
+                                                      
+                                                      {msg.responseL2 && !msg.isProcessing && (
+                                                        <div className="flex items-center gap-4 mt-8 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                           <button 
+                                                              onClick={() => handleFeedback(mIdx, 'like')}
+                                                              className={`p-2 rounded-lg transition-all ${msg.feedback === 'like' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' : 'bg-white/10 text-white/20 hover:text-white hover:bg-white/20'}`}
+                                                           >
+                                                              <ThumbsUp size={14} />
+                                                           </button>
+                                                           <button 
+                                                              onClick={() => handleFeedback(mIdx, 'dislike')}
+                                                              className={`p-2 rounded-lg transition-all ${msg.feedback === 'dislike' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20 scale-110' : 'bg-white/10 text-white/20 hover:text-white hover:bg-white/20'}`}
+                                                           >
+                                                              <ThumbsDown size={14} />
+                                                           </button>
+                                                        </div>
+                                                      )}
+                                                   </>
+                                                 )}
+                                              </div>
+                                           </div>
+                                        )}
+                                     </div>
+                                   ))}
+                                </div>
                              )}
                           </div>
                        </div>

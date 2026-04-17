@@ -48,21 +48,43 @@ export const queryStreamGraph = async (uid, prompt, history, modelsL1, modelL2, 
 
   while (true) {
     const { value, done } = await reader.read();
-    if (done) break;
+    if (done) {
+      // Process remaining buffer if any
+      if (buffer.trim()) {
+        const lines = buffer.split('\n');
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              onEvent(data);
+            } catch (e) {
+              console.error('Error parsing final SSE chunk:', e);
+            }
+          }
+        }
+      }
+      break;
+    }
     
     buffer += decoder.decode(value, { stream: true });
     
-    const lines = buffer.split('\n\n');
-    buffer = lines.pop(); // Keep the last incomplete chunk in the buffer
+    // SSE messages are separated by double newlines
+    let parts = buffer.split('\n\n');
+    buffer = parts.pop(); // Last part might be incomplete
     
-    for (const line of lines) {
-      if (line.startsWith('data: ')) {
-        try {
-          const data = JSON.parse(line.slice(6));
-          if (data.error) throw new Error(data.error);
-          onEvent(data);
-        } catch (e) {
-          console.error('Error parsing SSE:', e);
+    for (const part of parts) {
+      const lines = part.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          try {
+            const dataStr = line.slice(6).trim();
+            if (!dataStr) continue;
+            const data = JSON.parse(dataStr);
+            if (data.error) throw new Error(data.error);
+            onEvent(data);
+          } catch (e) {
+            console.error('Error parsing SSE line:', e, 'Line:', line);
+          }
         }
       }
     }
