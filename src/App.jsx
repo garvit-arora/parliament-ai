@@ -66,14 +66,14 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
   return (
     <div className="h-screen w-full flex bg-[#09090b] text-white overflow-hidden relative font-sans">
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] md:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* SIDEBAR */}
       <div className={`
-        transition-all duration-300 border-r border-white/5 bg-[#0d0d12] flex flex-col flex-shrink-0 z-[120]
-        ${sidebarOpen ? 'w-[280px] opacity-100' : 'w-0 opacity-0 overflow-hidden'}
-        ${sidebarOpen ? 'fixed inset-y-0 left-0 lg:relative' : ''}
+        fixed inset-y-0 left-0 z-[120] w-[280px] bg-[#0d0d12] border-r border-white/5 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out will-change-transform
+        md:relative md:translate-x-0 md:flex
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
           <div className="w-[280px] h-full flex flex-col p-4">
              <div className="flex items-center justify-between mb-8 px-2">
@@ -120,7 +120,7 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
       <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
         <header className="flex items-center justify-between px-4 md:px-8 py-2 md:py-6 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.04] z-[100] sticky top-0 h-14 md:h-[80px]">
            <div className="flex items-center gap-4 md:gap-6 overflow-hidden max-w-[60%] md:max-w-[50%]">
-              <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg lg:hidden flex-shrink-0"><Menu size={20} /></button>
+              <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg md:hidden flex-shrink-0"><Menu size={20} /></button>
               
               {pageTitle ? (
                  <div className="text-lg md:text-xl font-bold tracking-tight text-white whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">{pageTitle}</div>
@@ -142,6 +142,10 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
               <button onClick={() => navigate('/whitepaper')} className="hidden md:flex text-[10px] font-black uppercase tracking-widest text-white hover:text-white items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
                 <FileText size={14} className="group-hover:text-[#ea3a5b] transition-colors" />
                 Whitepaper
+              </button>
+              
+              <button onClick={handleShare} className="md:hidden p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors">
+                <Share2 size={18} />
               </button>
               
               <button onClick={handleShare} className="hidden md:flex text-[10px] font-black uppercase tracking-widest text-white hover:text-white items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
@@ -177,12 +181,13 @@ function MainApp() {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth >= 768);
   
   useEffect(() => {
     const handleResize = () => {
-      // Auto-close sidebar on mobile/tablet when resizing
-      if (window.innerWidth < 1024 && sidebarOpen) {
+      if (window.innerWidth >= 768) {
+        setSidebarOpen(true);
+      } else if (sidebarOpen) {
         setSidebarOpen(false);
       }
     };
@@ -515,8 +520,8 @@ function MainApp() {
                <Routes>
                   <Route path="/" element={
                      <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
-                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-y-auto'} p-4 md:p-12 mb-4`} ref={scrollRef}>
-                           <div className="w-full max-w-[420px] mx-auto md:max-w-none space-y-16 pt-10 pb-32 md:py-10">
+                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-hidden'} p-4 md:p-12 mb-4`} ref={scrollRef}>
+                           <div className={`w-full max-w-[420px] mx-auto md:max-w-none space-y-16 pt-10 ${activeSession ? 'pb-32' : 'pb-0'} md:py-10`}>
                               {!activeSession && (
                                 <div className="h-[50vh] md:h-[60vh] flex flex-col items-center justify-center text-center space-y-3 md:space-y-0">
                                    <div className="relative z-10 w-full px-4 md:px-12">
