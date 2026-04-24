@@ -72,8 +72,8 @@ export default function LandingPage({ onLoginClick }) {
       </nav>
 
       {/* HERO SECTION */}
-      <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 overflow-hidden">
-        <div className="max-w-4xl mx-auto z-10 w-full lg:-mt-20">
+      <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
+        <div className="max-w-4xl mx-auto z-10 w-full">
           <h1 className="text-6xl md:text-8xl font-medium tracking-tight mb-10 text-white animate-in fade-in slide-in-from-bottom-8 duration-1000 text-balance leading-tight">
             Neutralize Bias in <br />
             Automated Decisions.
