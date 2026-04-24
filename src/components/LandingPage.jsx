@@ -1,5 +1,26 @@
 import React, { useState } from 'react';
 import { Target, Shield, Zap, ChevronDown, Menu, X, ArrowRight, Scale, Eye, Database, BarChart3, Sliders, CheckCircle2, FileText } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const fadeUpVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
+};
+
+const heroFadeUpVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+};
 
 export default function LandingPage({ onLoginClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -73,15 +94,20 @@ export default function LandingPage({ onLoginClick }) {
 
       {/* HERO SECTION */}
       <header className="relative min-h-screen flex flex-col items-center justify-center text-center px-6 pt-20 overflow-hidden">
-        <div className="max-w-4xl mx-auto z-10 w-full">
-          <h1 className="text-6xl md:text-8xl font-medium tracking-tight mb-10 text-white animate-in fade-in slide-in-from-bottom-8 duration-1000 text-balance leading-tight">
+        <motion.div 
+          initial="hidden" 
+          animate="visible" 
+          variants={staggerContainer}
+          className="max-w-4xl mx-auto z-10 w-full"
+        >
+          <motion.h1 variants={heroFadeUpVariants} className="text-6xl md:text-8xl font-medium tracking-tight mb-10 text-white text-balance leading-tight">
             Neutralize Bias in <br />
             Automated Decisions.
-          </h1>
-          <p className="max-w-2xl mx-auto text-xl md:text-2xl text-white font-normal leading-relaxed mb-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
+          </motion.h1>
+          <motion.p variants={heroFadeUpVariants} className="max-w-2xl mx-auto text-xl md:text-2xl text-white font-normal leading-relaxed mb-16">
             When programs decide who gets a job or a loan, historical data flaws become discriminatory mistakes. We build the layer that detects and fixes bias before it impacts lives.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-400">
+          </motion.p>
+          <motion.div variants={heroFadeUpVariants} className="flex flex-col sm:flex-row items-center justify-center gap-8">
             <button onClick={onLoginClick} className="bg-[#ea3a5b] text-white font-semibold px-10 py-4 rounded-full transition-all hover:bg-[#ff4e6e] flex items-center gap-3 text-lg shadow-xl shadow-[#ea3a5b]/20 hover:scale-105">
               Run a Bias Audit
               <Zap size={20} />
@@ -90,22 +116,34 @@ export default function LandingPage({ onLoginClick }) {
               How it works
               <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </header>
 
       {/* FORENSIC LOGIC SECTION */}
       <section id="logic" className="min-h-screen flex items-center py-20 bg-[#09090b] border-t border-white/5 relative">
         <div className="max-w-6xl mx-auto px-8 flex flex-col items-center w-full">
-          <div className="text-center mb-24 max-w-3xl">
-            <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-6">Forensic Architecture</div>
-            <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-8">Inspect models for hidden unfairness.</h2>
-          </div>
+          <motion.div 
+            initial="hidden" 
+            whileInView="visible" 
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="text-center mb-24 max-w-3xl"
+          >
+            <motion.div variants={fadeUpVariants} className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-6">Forensic Architecture</motion.div>
+            <motion.h2 variants={fadeUpVariants} className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-8">Inspect models for hidden unfairness.</motion.h2>
+          </motion.div>
 
-          <div className="w-full max-w-5xl mb-24 grid grid-cols-1 md:grid-cols-2 gap-8">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="w-full max-w-5xl mb-24 grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
             
             {/* --- Pipeline 1: Standard Chat --- */}
-            <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-8 overflow-hidden group hover:border-white/20 transition-all">
+            <motion.div variants={fadeUpVariants} className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-8 overflow-hidden group hover:border-white/20 transition-all">
               <div className="absolute top-6 left-6 text-[9px] font-black uppercase tracking-[0.3em] text-[#ea3a5b] flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#ea3a5b] animate-pulse" />
                 Standard Audit
@@ -175,10 +213,10 @@ export default function LandingPage({ onLoginClick }) {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* --- Pipeline 2: RAG Augmented --- */}
-            <div className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-8 overflow-hidden group hover:border-purple-500/30 transition-all">
+            <motion.div variants={fadeUpVariants} className="relative bg-white/[0.02] border border-white/10 rounded-[32px] p-8 overflow-hidden group hover:border-purple-500/30 transition-all">
               <div className="absolute top-6 left-6 text-[9px] font-black uppercase tracking-[0.3em] text-purple-400 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
                 RAG Augmented Audit
@@ -244,56 +282,80 @@ export default function LandingPage({ onLoginClick }) {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-3 gap-16 text-center"
+          >
             {[
               { t: 'Measure Fairness', d: 'Quantify discrimination across race, gender, and age using statistical disparity metrics.', i: <Scale size={24} className="text-[#ea3a5b]" /> },
               { t: 'Flag Disparities', d: 'Instantly isolate when automated decisions produce unequal outcomes for marginalized groups.', i: <Eye size={24} className="text-[#ea3a5b]" /> },
               { t: 'Mitigate Harm', d: 'Implement real-time neural adjustments to neutralize historical flaws and ensure equity.', i: <Shield size={24} className="text-[#ea3a5b]" /> }
             ].map((f, idx) => (
-              <div key={idx} className="space-y-6 flex flex-col items-center">
+              <motion.div key={idx} variants={fadeUpVariants} className="space-y-6 flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-[#ea3a5b]/10 flex items-center justify-center mb-2">{f.i}</div>
                 <h4 className="text-xl font-bold text-white">{f.t}</h4>
                 <p className="text-white text-sm leading-relaxed max-w-xs">{f.d}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* SAFETY & TRUST */}
       <section className="min-h-screen flex items-center py-20 bg-[#09090b] border-t border-white/5">
-        <div className="max-w-4xl mx-auto px-8 text-center w-full">
-           <h2 className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-10 leading-tight">A foundation built on <br /><span className="text-[#ea3a5b]">objective truth.</span></h2>
-           <p className="text-xl text-white leading-relaxed font-normal mb-20 max-w-2xl mx-auto">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={staggerContainer}
+          className="max-w-4xl mx-auto px-8 text-center w-full"
+        >
+           <motion.h2 variants={fadeUpVariants} className="text-4xl md:text-6xl font-medium tracking-tight text-white mb-10 leading-tight">A foundation built on <br /><span className="text-[#ea3a5b]">objective truth.</span></motion.h2>
+           <motion.p variants={fadeUpVariants} className="text-xl text-white leading-relaxed font-normal mb-20 max-w-2xl mx-auto">
               Our auditing protocol is hard-coded to prioritize equitable outcomes over flawed historical inputs.
-           </p>
+           </motion.p>
            
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
-              <div className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
+           <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+              <motion.div variants={fadeUpVariants} className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
                  <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-widest text-xs">Constitutional Neutrality</h4>
                  <p className="text-sm text-white leading-relaxed">Models are hard-coded to ignore demographic proxies that drive unfair rejection or acceptance rates.</p>
-              </div>
-              <div className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
+              </motion.div>
+              <motion.div variants={fadeUpVariants} className="p-10 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all cursor-default">
                  <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-widest text-xs">Zero-Bias Persistence</h4>
                  <p className="text-sm text-white leading-relaxed">Every forensic audit is stateful but ephemeral—your sensitive data is processed for verification, never stored for model training.</p>
-              </div>
-           </div>
-        </div>
+              </motion.div>
+           </motion.div>
+        </motion.div>
       </section>
 
       {/* PRICING */}
       <section id="pricing" className="min-h-screen flex items-center py-20 relative bg-[#09090b]">
         <div className="max-w-7xl mx-auto px-8 w-full">
-           <div className="text-center mb-24">
-              <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-4 italic uppercase">Pricing</h2>
-              <p className="text-white text-lg uppercase tracking-widest font-bold">Scale your auditing protocols.</p>
-           </div>
+           <motion.div 
+             initial="hidden"
+             whileInView="visible"
+             viewport={{ once: true, margin: "-100px" }}
+             variants={staggerContainer}
+             className="text-center mb-24"
+           >
+              <motion.h2 variants={fadeUpVariants} className="text-5xl md:text-8xl font-black tracking-tighter mb-4 italic uppercase">Pricing</motion.h2>
+              <motion.p variants={fadeUpVariants} className="text-white text-lg uppercase tracking-widest font-bold">Scale your auditing protocols.</motion.p>
+           </motion.div>
            
-           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto">
-             <div className="p-12 rounded-[40px] bg-white/[0.02] border border-white/5 flex flex-col items-center text-center">
+           <motion.div 
+             initial="hidden"
+             whileInView="visible"
+             viewport={{ once: true, margin: "-100px" }}
+             variants={staggerContainer}
+             className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-5xl mx-auto"
+           >
+             <motion.div variants={fadeUpVariants} className="p-12 rounded-[40px] bg-white/[0.02] border border-white/5 flex flex-col items-center text-center">
                <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-white mb-8">Auditor</div>
                <div className="text-7xl font-medium mb-10 text-white leading-none tracking-tighter">$0</div>
                <ul className="space-y-6 mb-16 text-left w-full text-white text-sm font-medium">
@@ -302,9 +364,9 @@ export default function LandingPage({ onLoginClick }) {
                  <li className="flex items-center gap-4 tracking-widest uppercase text-[10px]">○ Public Record</li>
                </ul>
                <button onClick={onLoginClick} className="w-full py-5 rounded-2xl border border-white/10 text-white font-black text-xs uppercase tracking-widest hover:bg-white/5 transition-all">Start Audit</button>
-             </div>
+             </motion.div>
              
-             <div className="p-12 rounded-[40px] bg-white/[0.02] border border-[#ea3a5b]/30 flex flex-col items-center text-center relative overflow-hidden group">
+             <motion.div variants={fadeUpVariants} className="p-12 rounded-[40px] bg-white/[0.02] border border-[#ea3a5b]/30 flex flex-col items-center text-center relative overflow-hidden group">
                <div className="absolute top-0 right-0 p-8 opacity-20 group-hover:scale-125 transition-transform"><Zap className="text-[#ea3a5b]" size={60} /></div>
                <div className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#ea3a5b] mb-8 mt-4">Compliance Hero</div>
                <div className="text-7xl font-medium mb-10 text-white leading-none tracking-tighter">$49</div>
@@ -315,18 +377,24 @@ export default function LandingPage({ onLoginClick }) {
                  <li className="flex items-center gap-4 tracking-widest uppercase text-[10px]">● Board-Ready Compliance PDFs</li>
                </ul>
                <button onClick={onLoginClick} className="w-full py-5 rounded-2xl bg-[#ea3a5b] text-white font-black text-xs uppercase tracking-widest hover:bg-[#ff4e6e] transition-all shadow-xl shadow-[#ea3a5b]/30">Unlock Full Protocol</button>
-             </div>
-           </div>
+             </motion.div>
+           </motion.div>
         </div>
       </section>
 
       {/* FOOTER */}
       <footer className="pt-20 pb-20 bg-[#09090b] border-t border-white/5 overflow-hidden">
-        <div className="w-full px-8 md:px-20 text-center">
-            <h1 className="text-[15vw] font-[1000] tracking-[-0.08em] leading-[0.8] uppercase text-white select-none pointer-events-none opacity-90 mb-20">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={staggerContainer}
+          className="w-full px-8 md:px-20 text-center"
+        >
+            <motion.h1 variants={fadeUpVariants} className="text-[15vw] font-[1000] tracking-[-0.08em] leading-[0.8] uppercase text-white select-none pointer-events-none opacity-90 mb-20">
               COUNCIL<span className="text-[#ea3a5b]">X</span>
-            </h1>
-            <div className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-white/10 gap-8">
+            </motion.h1>
+            <motion.div variants={fadeUpVariants} className="flex flex-col md:flex-row justify-between items-center pt-10 border-t border-white/10 gap-8">
               <div className="text-[10px] font-black uppercase tracking-[0.5em] text-white">
                 © 2026 COUNCILX SYSTEMS • GLOBAL PROTOCOL 01
               </div>
@@ -335,8 +403,8 @@ export default function LandingPage({ onLoginClick }) {
                   <div key={s} className="text-[10px] font-black uppercase tracking-[0.5em] text-white hover:text-white transition-colors cursor-pointer">{s}</div>
                 ))}
               </div>
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
       </footer>
     </div>
   );
