@@ -118,38 +118,38 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
       </div>
 
       <div className="flex-1 flex flex-col bg-[#09090b] min-w-0 relative">
-        <header className="flex items-center justify-between px-8 py-6 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.04] z-[100] sticky top-0 h-[80px]">
-           <div className="flex items-center gap-6 overflow-hidden max-w-[50%]">
+        <header className="flex items-center justify-between px-4 md:px-8 py-2 md:py-6 bg-[#09090b]/50 backdrop-blur-md border-b border-white/[0.04] z-[100] sticky top-0 h-14 md:h-[80px]">
+           <div className="flex items-center gap-4 md:gap-6 overflow-hidden max-w-[60%] md:max-w-[50%]">
               <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-white/5 rounded-lg lg:hidden flex-shrink-0"><Menu size={20} /></button>
               
               {pageTitle ? (
-                 <div className="text-xl font-bold tracking-tight text-white whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">{pageTitle}</div>
+                 <div className="text-lg md:text-xl font-bold tracking-tight text-white whitespace-nowrap animate-in fade-in slide-in-from-left-4 duration-300">{pageTitle}</div>
               ) : activeSession && location.pathname === '/' ? (
                 <>
-                  <div className="flex items-center bg-white/5 rounded-2xl p-1 border border-white/5 overflow-hidden flex-shrink-0">
+                  <div className="hidden md:flex items-center bg-white/5 rounded-2xl p-1 border border-white/5 overflow-hidden flex-shrink-0">
                      <button onClick={() => setCurrentView('flow')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'flow' ? 'bg-white text-black shadow-lg' : 'text-white hover:text-white'}`}>Process Map</button>
                      <button onClick={() => setCurrentView('transcript')} className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentView === 'transcript' ? 'bg-white text-black shadow-lg' : 'text-white hover:text-white'}`}>Transcript</button>
                   </div>
-                  <div className="h-4 w-[1px] bg-white/10 flex-shrink-0 mx-2" />
-                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-white truncate italic flex-grow">{activeSession.title}</div>
+                  <div className="hidden md:block h-4 w-[1px] bg-white/10 flex-shrink-0 mx-2" />
+                  <div className="hidden md:block text-[10px] font-black uppercase tracking-[0.3em] text-white truncate italic flex-grow">{activeSession.title}</div>
                 </>
               ) : (
                 <div className="w-8" />
               )}
            </div>
            
-           <div className="flex items-center gap-4">
-              <button onClick={() => navigate('/whitepaper')} className="text-[10px] font-black uppercase tracking-widest text-white hover:text-white flex items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+           <div className="flex items-center gap-2 md:gap-4">
+              <button onClick={() => navigate('/whitepaper')} className="hidden md:flex text-[10px] font-black uppercase tracking-widest text-white hover:text-white items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
                 <FileText size={14} className="group-hover:text-[#ea3a5b] transition-colors" />
                 Whitepaper
               </button>
               
-              <button onClick={handleShare} className="text-[10px] font-black uppercase tracking-widest text-white hover:text-white flex items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
+              <button onClick={handleShare} className="hidden md:flex text-[10px] font-black uppercase tracking-widest text-white hover:text-white items-center gap-2 group px-4 py-2 rounded-xl border border-white/5 hover:bg-white/5 transition-all">
                 <Share2 size={14} className="group-hover:text-[#ea3a5b] transition-colors" />
                 Share
               </button>
               
-              <div className="h-4 w-[1px] bg-white/10 mx-2" />
+              <div className="hidden md:block h-4 w-[1px] bg-white/10 mx-2" />
               
               <button onClick={() => navigate('/account')} className="flex items-center gap-3 group px-2 py-1 rounded-full hover:bg-white/5 transition-all">
                  <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-[10px] font-bold overflow-hidden border border-white/10 shadow-lg shadow-indigo-500/20 group-hover:border-indigo-400/50 transition-colors">
@@ -157,7 +157,7 @@ function DashboardShell({ currentUser, children, sidebarOpen, setSidebarOpen, ha
                  </div>
               </button>
 
-              <button onClick={handleLogout} className="p-2 text-white hover:text-rose-500 transition-colors"><LogOut size={16} /></button>
+              <button onClick={handleLogout} className="hidden md:block p-2 text-white hover:text-rose-500 transition-colors"><LogOut size={16} /></button>
            </div>
         </header>
 
@@ -420,15 +420,29 @@ function MainApp() {
   const inputComponent = (
     <div className="w-full relative">
       {/* BOX UI */}
-      <div className={`rounded-[32px] overflow-hidden transition-all border border-white/[0.08] backdrop-blur-3xl bg-white/[0.03] ${!activeSession ? 'shadow-2xl shadow-black/80' : 'shadow-xl'}`}>
+      <div className={`md:rounded-[32px] overflow-hidden transition-all md:border md:border-white/[0.08] backdrop-blur-3xl md:bg-white/[0.03] ${!activeSession ? 'md:shadow-2xl md:shadow-black/80' : 'md:shadow-xl'} flex items-center gap-2 rounded-2xl bg-[#202123]/90 border border-white/10 shadow-lg px-2 py-1.5 md:block md:px-0 md:py-0`}>
+        <div className="hidden md:block w-full">
+           <textarea
+             value={inputValue}
+             onChange={(e) => setInputValue(e.target.value)}
+             onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
+             placeholder="Ask anything..."
+             className="w-full px-10 pt-10 pb-4 bg-transparent text-white text-base outline-none resize-none min-h-[120px] max-h-[200px] font-medium leading-relaxed placeholder:text-white"
+           />
+        </div>
+        
+        {/* Mobile Input */}
+        <button onClick={() => fileInputRef.current?.click()} className="md:hidden p-2 rounded-full text-white/70 hover:text-white flex-shrink-0"><Plus size={20} /></button>
         <textarea
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } }}
-          placeholder="Ask anything..."
-          className="w-full px-10 pt-10 pb-4 bg-transparent text-white text-base outline-none resize-none min-h-[120px] font-medium leading-relaxed placeholder:text-white"
+          placeholder="Message..."
+          className="md:hidden flex-1 bg-transparent text-white text-base outline-none resize-none max-h-[100px] font-medium py-2 placeholder:text-white/40"
+          rows={1}
         />
-        <div className="flex items-center justify-between px-10 pb-8">
+        
+        <div className="hidden md:flex items-center justify-between px-10 pb-8">
           <div className="flex gap-4 items-center">
              <button onClick={() => fileInputRef.current?.click()} className="p-4 rounded-full bg-white/5 border border-white/10 text-white hover:text-white hover:bg-[#ea3a5b]/20 hover:border-[#ea3a5b]/40 transition-all"><Plus size={20} /></button>
              <button onClick={startSTT} className={`p-4 rounded-full transition-all border ${isListening ? 'bg-rose-500/20 border-rose-500 text-rose-500 animate-pulse' : 'bg-white/5 border-white/10 text-white hover:text-white'}`}><Mic size={20} /></button>
@@ -446,6 +460,18 @@ function MainApp() {
               </button>
             )}
           </div>
+        </div>
+        
+        {/* Mobile Controls */}
+        <div className="md:hidden flex items-center gap-1">
+           <button onClick={startSTT} className={`p-2 rounded-full transition-all flex-shrink-0 ${isListening ? 'text-rose-500 animate-pulse' : 'text-white/60 hover:text-white'}`}><Mic size={20} /></button>
+           {isThinking ? (
+              <button onClick={handleStop} className="w-9 h-9 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center flex-shrink-0"><div className="w-3 h-3 bg-rose-500 rounded-sm"></div></button>
+           ) : (
+              <button onClick={() => handleSend()} disabled={!inputValue.trim() && !attachedFile} className="w-9 h-9 rounded-full bg-white text-black disabled:opacity-20 flex items-center justify-center flex-shrink-0 disabled:bg-white/20 disabled:text-white/50 transition-colors">
+                 <Send size={16} className="mr-0.5 mt-0.5" />
+              </button>
+           )}
         </div>
       </div>
     </div>
@@ -488,21 +514,21 @@ function MainApp() {
             >
                <Routes>
                   <Route path="/" element={
-                    <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
-                       <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-y-hidden'} p-4 md:p-12 mb-4`} ref={scrollRef}>
-                          <div className="w-full space-y-16 py-10">
-                             {!activeSession && (
-                               <div className="h-[60vh] flex items-center justify-center text-center">
-                                  <div className="relative z-10 w-full px-12">
-                                     <h2 className="text-7xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white">
-                                        {new Date().getHours() < 12 ? 'Good Morning,' : new Date().getHours() < 18 ? 'Good Afternoon,' : 'Good Evening,'} <span className="text-[#ea3a5b]">{(currentUser?.displayName || currentUser?.display_name || currentUser?.email?.split('@')?.[0] || 'there')?.split(' ')?.[0]}</span>.
-                                     </h2>
-                                     <p className="text-white text-sm font-black uppercase tracking-[0.4em] mt-6">
-                                        {randomTagline}
-                                     </p>
-                                  </div>
-                                </div>
-                             )}
+                     <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
+                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-y-auto'} p-4 md:p-12 mb-4`} ref={scrollRef}>
+                           <div className="w-full max-w-[420px] mx-auto md:max-w-none space-y-16 pt-10 pb-32 md:py-10">
+                              {!activeSession && (
+                                <div className="h-[50vh] md:h-[60vh] flex flex-col items-center justify-center text-center space-y-3 md:space-y-0">
+                                   <div className="relative z-10 w-full px-4 md:px-12">
+                                      <h2 className="text-3xl font-semibold md:text-7xl md:font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white">
+                                         {new Date().getHours() < 12 ? 'Good Morning,' : new Date().getHours() < 18 ? 'Good Afternoon,' : 'Good Evening,'} <span className="text-[#ea3a5b]">{(currentUser?.displayName || currentUser?.display_name || currentUser?.email?.split('@')?.[0] || 'there')?.split(' ')?.[0]}</span>.
+                                      </h2>
+                                      <p className="text-xs text-gray-400 md:text-white md:text-sm font-black uppercase tracking-widest md:tracking-[0.4em] mt-3 md:mt-6">
+                                         {randomTagline}
+                                      </p>
+                                   </div>
+                                 </div>
+                              )}
                              {activeSession && currentView === 'flow' && (
                                 <div className="flex-1 flex flex-col items-center">
                                {/* HUD OVERLAY - Elevated 'Out of Box' */}
@@ -603,20 +629,20 @@ function MainApp() {
                           </div>
                        </div>
                        
-                       <div className="p-12 pt-0 w-full max-w-none">
-                          <div className="w-full px-4">
+                        <div className="p-4 pt-0 w-full fixed bottom-4 left-0 right-0 md:static md:max-w-none md:p-12 md:pt-0 z-50">
+                          <div className="w-full max-w-[420px] mx-auto md:max-w-none md:px-4">
                              {/* ATTACHED FILE PREVIEW ABOVE THE BOX */}
                              {attachedFile && (
-                               <div className="mb-4 animate-in slide-in-from-bottom-2 duration-300">
-                                  <div className="bg-[#161720]/80 backdrop-blur-3xl border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl inline-flex">
-                                     <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg"><FileText size={18} /></div>
-                                     <div className="min-w-0 pr-4">
-                                        <div className="text-sm font-bold truncate text-white">{attachedFile.name}</div>
-                                        <div className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Read & Index</div>
-                                     </div>
-                                     <button onClick={() => setAttachedFile(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={14} /></button>
-                                  </div>
-                               </div>
+                                <div className="mb-4 animate-in slide-in-from-bottom-2 duration-300">
+                                   <div className="bg-[#161720]/80 backdrop-blur-3xl border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-4 shadow-2xl inline-flex">
+                                      <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg"><FileText size={18} /></div>
+                                      <div className="min-w-0 pr-4">
+                                         <div className="text-sm font-bold truncate text-white">{attachedFile.name}</div>
+                                         <div className="text-[9px] font-black uppercase tracking-widest text-emerald-400">Read & Index</div>
+                                      </div>
+                                      <button onClick={() => setAttachedFile(null)} className="p-2 hover:bg-white/10 rounded-full transition-colors"><X size={14} /></button>
+                                   </div>
+                                </div>
                              )}
                              {inputComponent}
                           </div>
