@@ -520,8 +520,8 @@ function MainApp() {
                <Routes>
                   <Route path="/" element={
                      <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
-                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col items-center px-4 py-6 md:p-12 md:mb-4`} ref={scrollRef}>
-                           <div className={`w-full max-w-[380px] mx-auto md:max-w-none space-y-6 md:space-y-16 pt-0 md:pt-10 ${activeSession ? 'pb-28 md:pb-32' : 'pb-0'} md:py-10 min-h-[calc(100vh-140px)] md:min-h-0 flex flex-col`}>
+                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto scroll-smooth scroll-pb-32 pb-32 md:pb-0' : 'overflow-hidden'} flex flex-col items-center px-4 py-6 md:p-12 md:mb-4`} ref={scrollRef}>
+                           <div className={`w-full max-w-[380px] mx-auto md:max-w-none space-y-6 md:space-y-16 pt-0 md:pt-10 ${activeSession ? 'pb-32 md:pb-32' : 'pb-0'} md:py-10 min-h-[calc(100vh-140px)] md:min-h-0 flex flex-col`}>
                               {!activeSession && (
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 md:space-y-0 h-[50vh] md:h-[60vh] md:flex-none">
                                    <div className="relative z-10 w-full md:px-12">
@@ -607,7 +607,7 @@ function MainApp() {
                                                       </ReactMarkdown>
                                                       
                                                       {msg.responseL2 && !msg.isProcessing && (
-                                                        <div className="flex items-center gap-4 mt-8 pt-6 border-t border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                        <div className="flex items-center gap-4 mt-8 pt-6 mb-8 md:mb-0 border-t border-white/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
                                                            <button 
                                                               onClick={() => handleFeedback(mIdx, 'like')}
                                                               className={`p-2 rounded-lg transition-all ${msg.feedback === 'like' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 scale-110' : 'bg-white/10 text-white hover:text-white hover:bg-white/20'}`}
