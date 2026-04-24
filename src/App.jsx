@@ -425,7 +425,7 @@ function MainApp() {
   const inputComponent = (
     <div className="w-full relative">
       {/* BOX UI */}
-      <div className={`md:rounded-[32px] overflow-hidden transition-all md:border md:border-white/[0.08] backdrop-blur-3xl md:bg-white/[0.03] ${!activeSession ? 'md:shadow-2xl md:shadow-black/80' : 'md:shadow-xl'} flex items-center gap-2 rounded-2xl bg-[#202123]/90 border border-white/10 shadow-lg px-2 py-1.5 md:block md:px-0 md:py-0`}>
+      <div className={`md:rounded-[32px] overflow-hidden transition-all md:border md:border-white/[0.08] md:backdrop-blur-3xl md:bg-white/[0.03] ${!activeSession ? 'md:shadow-2xl md:shadow-black/80' : 'md:shadow-xl'} flex items-center gap-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg px-2 py-1.5 md:block md:px-0 md:py-0`}>
         <div className="hidden md:block w-full">
            <textarea
              value={inputValue}
@@ -520,11 +520,11 @@ function MainApp() {
                <Routes>
                   <Route path="/" element={
                      <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
-                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-hidden'} p-4 md:p-12 mb-4`} ref={scrollRef}>
-                           <div className={`w-full max-w-[420px] mx-auto md:max-w-none space-y-16 pt-10 ${activeSession ? 'pb-32' : 'pb-0'} md:py-10`}>
+                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col items-center px-4 py-6 md:p-12 md:mb-4`} ref={scrollRef}>
+                           <div className={`w-full max-w-[380px] mx-auto md:max-w-none space-y-6 md:space-y-16 pt-0 md:pt-10 ${activeSession ? 'pb-28 md:pb-32' : 'pb-0'} md:py-10 min-h-[calc(100vh-140px)] md:min-h-0 flex flex-col`}>
                               {!activeSession && (
-                                <div className="h-[50vh] md:h-[60vh] flex flex-col items-center justify-center text-center space-y-3 md:space-y-0">
-                                   <div className="relative z-10 w-full px-4 md:px-12">
+                                <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 md:space-y-0 h-[50vh] md:h-[60vh] md:flex-none">
+                                   <div className="relative z-10 w-full md:px-12">
                                       <h2 className="text-3xl font-semibold md:text-7xl md:font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white">
                                          {new Date().getHours() < 12 ? 'Good Morning,' : new Date().getHours() < 18 ? 'Good Afternoon,' : 'Good Evening,'} <span className="text-[#ea3a5b]">{(currentUser?.displayName || currentUser?.display_name || currentUser?.email?.split('@')?.[0] || 'there')?.split(' ')?.[0]}</span>.
                                       </h2>
@@ -544,16 +544,16 @@ function MainApp() {
                                    if (!processedPrompt) return null;
                                   return (
                                      <div 
-                                        className="w-full max-w-2xl mx-auto mb-10 animate-in fade-in slide-in-from-top-4 duration-700 cursor-pointer"
+                                        className="w-full max-w-2xl mx-auto mb-4 md:mb-10 animate-in fade-in slide-in-from-top-4 duration-700 cursor-pointer"
                                         onClick={() => setIsInputExpanded(!isInputExpanded)}
                                      >
-                                        <div className="bg-[#12121a]/60 backdrop-blur-3xl border border-white/5 rounded-[32px] p-6 flex items-start gap-6 shadow-2xl transition-all hover:border-[#ea3a5b]/20">
-                                           <div className="w-12 h-12 rounded-2xl bg-[#ea3a5b]/10 flex items-center justify-center text-[#ea3a5b] flex-shrink-0 border border-[#ea3a5b]/20 shadow-lg shadow-[#ea3a5b]/5 mt-1">
-                                              <MessageSquare size={20} />
+                                        <div className="bg-[#12121a]/60 backdrop-blur-3xl border border-white/5 rounded-xl md:rounded-[32px] p-4 md:p-6 flex items-center md:items-start gap-3 md:gap-6 shadow-2xl transition-all hover:border-[#ea3a5b]/20">
+                                           <div className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-2xl bg-[#ea3a5b]/10 flex items-center justify-center text-[#ea3a5b] flex-shrink-0 border border-[#ea3a5b]/20 shadow-lg shadow-[#ea3a5b]/5 md:mt-1">
+                                              <MessageSquare size={16} className="md:w-5 md:h-5" />
                                            </div>
                                            <div className="min-w-0 flex-1">
-                                              <div className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-1.5 opacity-80 italic">Input</div>
-                                              <div className={`text-sm font-semibold text-white leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate'}`}>"{processedPrompt}"</div>
+                                              <div className="hidden md:block text-[10px] font-black uppercase tracking-[0.4em] text-[#ea3a5b] mb-1.5 opacity-80 italic">Input</div>
+                                              <div className={`text-sm font-semibold text-white break-words md:leading-relaxed ${isInputExpanded ? 'whitespace-pre-wrap' : 'truncate md:truncate'}`}>"{processedPrompt}"</div>
                                            </div>
                                         </div>
                                      </div>
@@ -585,16 +585,16 @@ function MainApp() {
                                 </div>
                              )}
                              {activeSession && currentView === 'transcript' && (
-                                <div className="w-full px-8 space-y-16">
+                                <div className="w-full px-0 md:px-8 space-y-4 md:space-y-16">
                                    {activeSession.messages.map((msg, mIdx) => (
-                                     <div key={mIdx} className="space-y-10 animate-in fade-in duration-700">
-                                        <div className="flex justify-end w-full"><div className="bg-white/5 px-10 py-6 rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white max-w-[70%] border border-white/[0.05] shadow-2xl">{msg.prompt}</div></div>
+                                     <div key={mIdx} className="space-y-4 md:space-y-10 animate-in fade-in duration-700">
+                                        <div className="flex justify-end w-full"><div className="bg-white/5 px-4 py-3 md:px-10 md:py-6 rounded-2xl md:rounded-3xl rounded-tr-none text-sm font-medium leading-relaxed italic text-white max-w-[85%] md:max-w-[70%] border border-white/[0.05] shadow-xl md:shadow-2xl">{msg.prompt}</div></div>
                                         {(msg.responseL2 || msg.isProcessing) && (
-                                           <div className="flex gap-10 group w-full">
-                                              <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center relative p-2 overflow-hidden">
+                                           <div className="flex gap-3 md:gap-10 group w-full">
+                                              <div className="w-8 h-8 md:w-12 md:h-12 flex-shrink-0 flex items-center justify-center relative p-1 md:p-2 overflow-hidden">
                                                  <img src="/logo.png" className="w-full h-full object-contain" alt="CouncilX" />
                                               </div>
-                                              <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-10 rounded-[32px] rounded-tl-none prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 max-w-[85%] shadow-sm overflow-x-auto min-h-[100px]">
+                                              <div className="flex-1 bg-white/[0.02] border border-white/[0.04] p-4 md:p-10 rounded-2xl md:rounded-[32px] rounded-tl-none prose prose-invert prose-p:leading-relaxed prose-pre:bg-black/50 max-w-full md:max-w-[85%] shadow-sm overflow-x-auto min-h-[60px] md:min-h-[100px] text-sm md:text-base">
                                                  {msg.isProcessing && !msg.responseL2 ? (
                                                    <div className="flex items-center gap-3 text-white italic">
                                                        <div className="w-2 h-2 bg-[#ea3a5b] rounded-full animate-ping" />
@@ -634,8 +634,8 @@ function MainApp() {
                           </div>
                        </div>
                        
-                        <div className="p-4 pt-0 w-full fixed bottom-4 left-0 right-0 md:static md:max-w-none md:p-12 md:pt-0 z-50">
-                          <div className="w-full max-w-[420px] mx-auto md:max-w-none md:px-4">
+                        <div className="p-0 pt-0 w-full fixed bottom-4 left-0 right-0 px-4 md:static md:max-w-none md:p-12 md:pt-0 z-50">
+                          <div className="w-full max-w-[380px] mx-auto md:max-w-none md:px-4">
                              {/* ATTACHED FILE PREVIEW ABOVE THE BOX */}
                              {attachedFile && (
                                 <div className="mb-4 animate-in slide-in-from-bottom-2 duration-300">
