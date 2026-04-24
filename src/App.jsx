@@ -425,7 +425,7 @@ function MainApp() {
   const inputComponent = (
     <div className="w-full relative">
       {/* BOX UI */}
-      <div className={`md:rounded-[32px] overflow-hidden transition-all md:border md:border-white/[0.08] md:backdrop-blur-3xl md:bg-white/[0.03] ${!activeSession ? 'md:shadow-2xl md:shadow-black/80' : 'md:shadow-xl'} flex items-center gap-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg px-2 py-1.5 md:block md:px-0 md:py-0`}>
+      <div className={`md:rounded-[32px] overflow-hidden transition-all md:border md:border-white/[0.08] md:backdrop-blur-3xl md:bg-white/[0.03] ${!activeSession ? 'md:shadow-2xl md:shadow-black/80' : 'md:shadow-xl'} flex items-center gap-2 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 shadow-lg px-2 h-[60px] md:h-auto md:block md:px-0 md:py-0`}>
         <div className="hidden md:block w-full">
            <textarea
              value={inputValue}
@@ -520,8 +520,8 @@ function MainApp() {
                <Routes>
                   <Route path="/" element={
                      <div className="h-full w-full flex flex-col relative animate-in fade-in duration-700">
-                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto scroll-smooth scroll-pb-32 pb-32 md:pb-0' : 'overflow-hidden'} flex flex-col items-center px-4 py-6 md:p-12 md:mb-4`} ref={scrollRef}>
-                           <div className={`w-full max-w-[380px] mx-auto md:max-w-none space-y-6 md:space-y-16 pt-0 md:pt-10 ${activeSession ? 'pb-32 md:pb-32' : 'pb-0'} md:py-10 min-h-[calc(100vh-140px)] md:min-h-0 flex flex-col`}>
+                        <div className={`flex-1 ${activeSession ? 'overflow-y-auto scroll-smooth pb-[100px] md:pb-0' : 'overflow-hidden'} flex flex-col items-center px-4 py-6 md:p-12 md:mb-4`} ref={scrollRef}>
+                           <div className={`w-full max-w-[380px] mx-auto md:max-w-none space-y-6 md:space-y-16 pt-0 md:pt-10 ${activeSession ? 'md:pb-32' : 'pb-0'} md:py-10 min-h-[calc(100vh-140px)] md:min-h-0 flex flex-col`}>
                               {!activeSession && (
                                 <div className="flex-1 flex flex-col items-center justify-center text-center space-y-3 md:space-y-0 h-[50vh] md:h-[60vh] md:flex-none">
                                    <div className="relative z-10 w-full md:px-12">
